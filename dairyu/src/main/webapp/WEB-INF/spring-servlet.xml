@@ -114,24 +114,60 @@
 	</bean>
 
 	<!-- websocket消息处理bean -->
-	<bean id="WebSocketHandler" class="org.sysuboys.diary.web.websocket.WebSocketHandler" />
+	<!-- 以下2个只是测试 -->
+	<bean id="WebSocketHandler" class="org.sysuboys.diaryu.web.websocket.WebSocketHandler" />
 	<websocket:handlers allowed-origins="*">
 		<!-- 配置消息处理bean和路径的映射关系 -->
 		<websocket:mapping path="/server" handler="WebSocketHandler" />
 		<websocket:handshake-interceptors>
-			<bean class="org.sysuboys.diary.web.websocket.HandshakeInterceptor" />
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
 		</websocket:handshake-interceptors>
 	</websocket:handlers>
-	<bean id="sockjsWebSocketHandler" class="org.sysuboys.diary.web.websocket.WebSocketHandler" />
+	<bean id="sockjsWebSocketHandler" class="org.sysuboys.diaryu.web.websocket.WebSocketHandler" />
 	<websocket:handlers allowed-origins="*">
 		<!-- 配置消息处理bean和路径的映射关系 -->
 		<websocket:mapping path="/sockjs/server" handler="sockjsWebSocketHandler" />
 		<websocket:handshake-interceptors>
-			<bean class="org.sysuboys.diary.web.websocket.HandshakeInterceptor" />
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
 		</websocket:handshake-interceptors>
 		<!-- 开启sockjs，去掉则关闭sockjs -->
 		<websocket:sockjs />
 	</websocket:handlers>
+	
+	<bean id="inviteHandler" class="org.sysuboys.diaryu.web.websocket.InviteHandler" />
+	<websocket:handlers allowed-origins="*">
+		<!-- 配置消息处理bean和路径的映射关系 -->
+		<websocket:mapping path="/invite" handler="inviteHandler" />
+		<websocket:handshake-interceptors>
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+	</websocket:handlers>
+	<bean id="isInvitedHandler" class="org.sysuboys.diaryu.web.websocket.IsInvitedHandler" />
+	<websocket:handlers allowed-origins="*">
+		<!-- 配置消息处理bean和路径的映射关系 -->
+		<websocket:mapping path="/isInvited" handler="isInvitedHandler" />
+		<websocket:handshake-interceptors>
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+	</websocket:handlers>
+	<bean id="readyHandler" class="org.sysuboys.diaryu.web.websocket.ReadyHandler" />
+	<websocket:handlers allowed-origins="*">
+		<!-- 配置消息处理bean和路径的映射关系 -->
+		<websocket:mapping path="/ready" handler="readyHandler" />
+		<websocket:handshake-interceptors>
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+	</websocket:handlers>
+	<bean id="matchHandler" class="org.sysuboys.diaryu.web.websocket.MatchHandler" />
+	<websocket:handlers allowed-origins="*">
+		<!-- 配置消息处理bean和路径的映射关系 -->
+		<websocket:mapping path="/match" handler="matchHandler" />
+		<websocket:handshake-interceptors>
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+	</websocket:handlers>
+	
+	
 	<!-- 配置websocket消息的最大缓冲区长度 -->
 	<bean
 		class="org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean">

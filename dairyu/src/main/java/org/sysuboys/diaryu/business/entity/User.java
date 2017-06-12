@@ -3,10 +3,13 @@ package org.sysuboys.diaryu.business.entity;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -22,6 +25,9 @@ public class User implements Serializable {
 	private String password;
 	private String salt;
 	// private List<String> friends; // 好友列表
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)  
+	private List<Diary> diarys;  
 
 	public Long getId() {
 		return id;
@@ -53,6 +59,14 @@ public class User implements Serializable {
 
 	public void setSalt(String salt) {
 		this.salt = salt;
+	}
+
+	public List<Diary> getDiarys() {
+		return diarys;
+	}
+
+	public void setDiarys(List<Diary> diarys) {
+		this.diarys = diarys;
 	}
 	
 //	public List<String> getFriends() {  

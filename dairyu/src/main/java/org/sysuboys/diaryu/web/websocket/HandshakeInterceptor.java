@@ -1,4 +1,4 @@
-package org.sysuboys.diary.web.websocket;
+package org.sysuboys.diaryu.web.websocket;
 
 import java.util.Map;  
 
