@@ -1,5 +1,6 @@
 package org.sysuboys.diaryu.realm;
 
+import org.apache.log4j.Logger;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -11,6 +12,9 @@ import org.sysuboys.diaryu.business.entity.User;
 import org.sysuboys.diaryu.business.service.IUserService;
 
 public class UserRealm extends AuthorizingRealm {
+	
+	static Logger logger = Logger.getLogger(UserRealm.class);
+	
 	@Autowired
 	private IUserService userService;
 
@@ -24,7 +28,9 @@ public class UserRealm extends AuthorizingRealm {
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 
 		String username = (String) token.getPrincipal();
-
+		
+		logger.debug("doGetAuthenticationInfo: trying to login: " + username);
+		
 		User user = userService.findByUsername(username);
 
 		if (user == null) {

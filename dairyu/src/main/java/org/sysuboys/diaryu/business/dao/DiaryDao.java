@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
 import org.sysuboys.diaryu.business.entity.Diary;
 
+@Repository
 public class DiaryDao extends AbstractJpaDAO<Diary> implements IDiaryDao {
 
 	@SuppressWarnings("unchecked")

@@ -69,10 +69,15 @@
 				/signup = anon
 				/login = anon
 				/logout = user
-				/menu = anon
-				/cuisine_detail/* = user
-				/order/* = authc
-				/buy = authc
+				
+				/upload = authc
+				/getFile = authc
+				
+				/invite = authc
+				/isInvited = authc
+				/ready = authc
+				/match = authc
+				
 				/test=authc,roles[vip],perms[user:delete]
 			</value>
 		</property>

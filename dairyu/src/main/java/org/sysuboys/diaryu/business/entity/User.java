@@ -18,16 +18,26 @@ public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
 	private String username;
 	private String password;
 	private String salt;
-	// private List<String> friends; // 好友列表
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Diary> diarys;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)  
-	private List<Diary> diarys;  
+	public User() {
+		super();
+	}
+
+	public User(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}
 
 	public Long getId() {
 		return id;
@@ -68,12 +78,5 @@ public class User implements Serializable {
 	public void setDiarys(List<Diary> diarys) {
 		this.diarys = diarys;
 	}
-	
-//	public List<String> getFriends() {  
-//        return friends;  
-//    }
-//	
-//	public void setFriends(List<String> friends) {
-//		this.friends = friends;
-//	}
+
 }

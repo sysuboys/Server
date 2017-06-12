@@ -30,7 +30,7 @@ public class Diary implements Serializable {
 		super();
 	}
 	
-	public Diary(final User user, final String title, final String body) {
+	public Diary(User user, String title, String body) {
 		this.user = user;
 		this.title = title;
 		this.body = body;
