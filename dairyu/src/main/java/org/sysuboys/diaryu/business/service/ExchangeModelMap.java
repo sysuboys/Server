@@ -8,11 +8,11 @@ import org.sysuboys.diaryu.business.model.ExchangeModel;
 
 @Service
 public class ExchangeModelMap implements IExchangeModelMap {
-	
+
 	Map<String, ExchangeModel> map = new ConcurrentHashMap<String, ExchangeModel>();
 
 	public Map<String, ExchangeModel> get() {
 		return map;
 	}
-	
+
 }

@@ -15,8 +15,8 @@ public class Diary implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@ManyToOne
@@ -25,11 +25,11 @@ public class Diary implements Serializable {
 
 	private String title = null;
 	private String body = null;
-	
+
 	public Diary() {
 		super();
 	}
-	
+
 	public Diary(User user, String title, String body) {
 		this.user = user;
 		this.title = title;

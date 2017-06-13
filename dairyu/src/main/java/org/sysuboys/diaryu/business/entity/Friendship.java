@@ -19,11 +19,11 @@ public class Friendship implements Serializable {
 
 	private Long uid1;
 	private Long uid2;
-	
+
 	public Friendship() {
 		super();
 	}
-	
+
 	public Friendship(Long uid1, Long uid2) {
 		this.uid1 = uid1;
 		this.uid2 = uid2;

@@ -21,14 +21,14 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	private String username;
 	private String password;
 	private String salt;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Diary> diarys;
-	
+
 	public User() {
 		super();
 	}

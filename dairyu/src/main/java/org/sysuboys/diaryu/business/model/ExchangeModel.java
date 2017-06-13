@@ -50,7 +50,7 @@ public class ExchangeModel {
 	public boolean isMatched() {
 		return matched;
 	}
-	
+
 	public String getAnother(String one) {
 		if (one.equals(from))
 			return to;

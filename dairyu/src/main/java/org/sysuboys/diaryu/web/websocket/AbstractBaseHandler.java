@@ -27,7 +27,7 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 	String username;
 	String handlerName;
 	Map<String, ExchangeModel> map;
-	
+
 	public abstract SessionType getSessionType();
 
 	@Override
@@ -35,10 +35,10 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 		logger = Logger.getLogger(this.getClass().getName());
 		String[] array = this.getClass().getName().split("\\.");
 		handlerName = array[array.length - 1];
-		
+
 		Subject subject = SecurityUtils.getSubject();
 		username = (String) subject.getPrincipal();
-		
+
 		logger.debug(handlerName + ": " + username + " connected");
 		webSocketSessionMap.get(username).put(getSessionType(), session);
 		map = exchangeModelMap.get();

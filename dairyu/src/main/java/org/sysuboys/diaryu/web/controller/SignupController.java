@@ -34,6 +34,7 @@ public class SignupController {
 			return "signup";
 		}
 
+		// TODO 逻辑转移
 		String salt = username; // TODO 设置salt为什么比较好
 		Md5Hash hash = new Md5Hash(request.getParameter("password"), salt); // MD5加盐加密
 		String password = hash.toString();
