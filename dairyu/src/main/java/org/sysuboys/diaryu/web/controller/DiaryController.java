@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.sysuboys.diaryu.business.entity.Diary;
 import org.sysuboys.diaryu.business.entity.User;
-import org.sysuboys.diaryu.business.service.ISessionService;
 import org.sysuboys.diaryu.business.service.IUserService;
 
 @Controller
@@ -18,8 +17,6 @@ public class DiaryController {
 
 	@Autowired
 	IUserService userService;
-	@Autowired
-	ISessionService sessionService;
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public @ResponseBody Body upload(HttpServletRequest request) {

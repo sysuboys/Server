@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -19,15 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.sysuboys.diaryu.business.service.IFriendshipService;
-import org.sysuboys.diaryu.business.service.ISessionService;
 import org.sysuboys.diaryu.business.service.IUserService;
-import org.sysuboys.diaryu.exception.NoSuchUser;
 
 @Controller
 public class LoginController {
 
-	@Autowired
-	ISessionService sessionService;
+	static Logger logger = Logger.getLogger(LoginController.class);
+
 	@Autowired
 	IUserService userService;
 	@Autowired
@@ -48,7 +47,7 @@ public class LoginController {
 		Subject subject = SecurityUtils.getSubject();
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe != null);
 		String msg = null;
-		
+
 		try {
 			subject.login(token);
 		} catch (UnknownAccountException e) {
@@ -58,19 +57,14 @@ public class LoginController {
 		} catch (AuthenticationException e) {
 			msg = "server error";
 		}
-		
+
 		Body body = new Body();
 		if (msg != null) {
 			body.message = msg;
 			return body;
 		}
 		body.name = username;
-		try {
-			body.friends = friendshipService.findFriends(username);
-		} catch (NoSuchUser e) {
-			System.err.println("fatal: can not find user after login");
-			e.printStackTrace();
-		}
+		body.friends = friendshipService.findFriends(username);
 		return body;
 	}
 

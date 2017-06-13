@@ -1,40 +1,46 @@
 package org.sysuboys.diaryu.web.websocket;
 
-import org.springframework.web.socket.CloseStatus;
+import org.json.JSONObject;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.sysuboys.diaryu.business.model.ExchangeModel;
+import org.sysuboys.diaryu.business.model.SessionType;
 
-public class ReadyHandler extends TextWebSocketHandler {
-
-	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		System.out.println("connect to the websocket success......");
-		session.sendMessage(new TextMessage("Server:connected OK!"));
-	}
+public class ReadyHandler extends AbstractBaseHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		super.handleTextMessage(session, message);
-		TextMessage returnMessage = new TextMessage(message.getPayload() + " received at server");
-		session.sendMessage(returnMessage);
-	}
+		JSONObject object = new JSONObject(message.getPayload());
+		String title2 = (String) object.get("title");
 
-	@Override
-	public void handleTransportError(WebSocketSession wss, Throwable thrwbl) throws Exception {
-		if (wss.isOpen()) {
-			wss.close();
+		// TODO 好友在线和日记存在判断
+
+		String error = null;
+		ExchangeModel exchangeModel = map.get(username);
+		if (exchangeModel == null)
+			error = "you are not invited";
+		else if (exchangeModel.getInviter().equals(username))
+			error = "inviter doesn't have to get ready";
+
+		JSONObject rtn = new JSONObject();
+		if (error != null) {
+			rtn.put("success", false);
+			rtn.put("message", error);
+		} else {
+			rtn.put("success", true);
+			exchangeModel.ready(title2);
 		}
-		System.out.println("websocket connection closed......");
+
+		TextMessage returnMessage = new TextMessage(rtn.toString());
+		synchronized (session) {
+			session.sendMessage(returnMessage);
+		}
 	}
 
 	@Override
-	public void afterConnectionClosed(WebSocketSession wss, CloseStatus cs) throws Exception {
-		System.out.println("websocket connection closed......");
+	public SessionType getSessionType() {
+		return SessionType.ready;
 	}
 
-	@Override
-	public boolean supportsPartialMessages() {
-		return false;
-	}
 }
