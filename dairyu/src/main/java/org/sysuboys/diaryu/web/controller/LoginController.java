@@ -46,32 +46,32 @@ public class LoginController {
 
 		Subject subject = SecurityUtils.getSubject();
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe != null);
-		String msg = null;
+		String error = null;
 
 		try {
 			subject.login(token);
 		} catch (UnknownAccountException e) {
-			msg = "wrong username";
+			error = "wrong username";
 		} catch (IncorrectCredentialsException e) {
-			msg = "wrong password";
+			error = "wrong password";
 		} catch (AuthenticationException e) {
-			msg = "server error";
+			error = "server error";
 		}
 
 		Body body = new Body();
-		if (msg != null) {
-			body.message = msg;
+		if (error != null) {
+			body.error = error;
 			return body;
 		}
-		body.name = username;
+		body.username = username;
 		body.friends = friendshipService.findFriends(username);
 		return body;
 	}
 
 	class Body {
 		public boolean success = false;
-		public String message = null;
-		public String name = null;
+		public String error = null;
+		public String username = null;
 		public List<String> friends = new ArrayList<String>();
 	}
 

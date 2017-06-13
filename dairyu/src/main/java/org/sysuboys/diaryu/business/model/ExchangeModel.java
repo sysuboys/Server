@@ -2,24 +2,24 @@ package org.sysuboys.diaryu.business.model;
 
 public class ExchangeModel {
 
-	final String from, to;
+	final String inviter, invitee;
 	String title1, title2;
 	boolean ready = false;
 	int position1 = -1, position2 = -1;
 	boolean matched = false;
 
-	public ExchangeModel(String from, String to, String title1) {
-		this.from = from;
-		this.to = to;
+	public ExchangeModel(String inviter, String invitee, String title1) {
+		this.inviter = inviter;
+		this.invitee = invitee;
 		this.title1 = title1;
 	}
 
 	public String getInviter() {
-		return from;
+		return inviter;
 	}
 
 	public String getInvitee() {
-		return to;
+		return invitee;
 	}
 
 	public synchronized void ready(String title2) {
@@ -32,9 +32,9 @@ public class ExchangeModel {
 			return false;
 		if (matched)
 			return true;
-		if (username.equals(from))
+		if (username.equals(inviter))
 			position1 = position;
-		else if (username.equals(to))
+		else if (username.equals(invitee))
 			position2 = position;
 		else
 			throw new RuntimeException("not matching inviter or invitee");
@@ -52,11 +52,19 @@ public class ExchangeModel {
 	}
 
 	public String getAnother(String one) {
-		if (one.equals(from))
-			return to;
-		if (one.equals(to))
-			return from;
-		throw new RuntimeException("ExchangeModel: can't get another of " + one);
+		if (one.equals(inviter))
+			return invitee;
+		if (one.equals(invitee))
+			return inviter;
+		throw new RuntimeException("ExchangeModel: neither inviter nor invitee is " + one);
+	}
+
+	public String getFriendTitle(String me) {
+		if (me.equals(inviter))
+			return title2;
+		if (me.equals(invitee))
+			return title1;
+		throw new RuntimeException("ExchangeModel: neither inviter nor invitee is " + me);
 	}
 
 }

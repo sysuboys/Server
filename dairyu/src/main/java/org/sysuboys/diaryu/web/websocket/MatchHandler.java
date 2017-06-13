@@ -11,8 +11,9 @@ public class MatchHandler extends AbstractBaseHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		super.handleTextMessage(session, message);
-		JSONObject object = new JSONObject(message.getPayload());
-		int position = (Integer) object.get("position");
+
+		JSONObject receivedObj = new JSONObject(message.getPayload());
+		int position = (Integer) receivedObj.get("position");
 
 		// TODO 好友在线和日记存在判断
 
@@ -26,7 +27,7 @@ public class MatchHandler extends AbstractBaseHandler {
 		JSONObject rtn = new JSONObject();
 		if (error != null) {
 			rtn.put("success", false);
-			rtn.put("message", error);
+			rtn.put("error", error);
 		} else {
 			boolean result = exchangeModel.match(username, position);
 			rtn.put("success", result);
@@ -36,6 +37,7 @@ public class MatchHandler extends AbstractBaseHandler {
 		synchronized (session) {
 			session.sendMessage(informMessage);
 		}
+
 		if ((Boolean) rtn.get("success")) { // 成功后也立即通知另一个人
 			String friend = exchangeModel.getAnother(username);
 			WebSocketSession friendSession = webSocketSessionMap.get(friend).get(SessionType.match);

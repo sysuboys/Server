@@ -12,9 +12,9 @@ public class InviteHandler extends AbstractBaseHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		super.handleTextMessage(session, message);
 
-		JSONObject object = new JSONObject(message.getPayload());
-		String friend = (String) object.get("friend");
-		String title = (String) object.get("title");
+		JSONObject receivedObj = new JSONObject(message.getPayload());
+		String invitee = (String) receivedObj.get("invitee");
+		String title = (String) receivedObj.get("title");
 
 		// TODO 好友在线和日记存在检测
 
@@ -23,30 +23,31 @@ public class InviteHandler extends AbstractBaseHandler {
 		synchronized (map) { // 交换关系创建锁
 			if (map.containsKey(username))
 				error = "you have already an exchange";
-			else if (map.containsKey(friend))
-				error = "your friend " + friend + " has already an exchange";
+			else if (map.containsKey(invitee))
+				error = "your friend " + invitee + " has already an exchange";
 			else {
-				ExchangeModel exchangeModel = new ExchangeModel(username, friend, title);
+				ExchangeModel exchangeModel = new ExchangeModel(username, invitee, title);
 				map.put(username, exchangeModel);
-				map.put(friend, exchangeModel);
+				map.put(invitee, exchangeModel);
 			}
 		}
 
-		JSONObject inform = new JSONObject();
+		JSONObject object = new JSONObject();
 		if (error != null) {
-			inform.put("success", false);
-			inform.put("message", message);
+			object.put("success", false);
+			object.put("error", error);
 
-			TextMessage informMessage = new TextMessage(inform.toString());
+			TextMessage informMessage = new TextMessage(object.toString());
 			synchronized (session) {
 				session.sendMessage(informMessage);
 			}
 		} else {
-			inform.put("invited", true);
-			inform.put("friend", username);
+			object.put("invited", true);
+			object.put("inviter", username);
+			object.put("title", title);
 
-			TextMessage informMessage = new TextMessage(inform.toString());
-			WebSocketSession friendSession = webSocketSessionMap.get(friend).get(SessionType.isInvited);
+			TextMessage informMessage = new TextMessage(object.toString());
+			WebSocketSession friendSession = webSocketSessionMap.get(invitee).get(SessionType.isInvited);
 			synchronized (friendSession) {
 				friendSession.sendMessage(informMessage);
 			}

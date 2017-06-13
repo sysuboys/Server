@@ -17,4 +17,6 @@ public interface IUserService {
 
 	void addDiary(Diary diary);
 
+	Diary findDiaryByUsernameAndTitle(String username, String title);
+
 }

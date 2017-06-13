@@ -11,8 +11,9 @@ public class ReadyHandler extends AbstractBaseHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		super.handleTextMessage(session, message);
-		JSONObject object = new JSONObject(message.getPayload());
-		String title2 = (String) object.get("title");
+
+		JSONObject receivedObj = new JSONObject(message.getPayload());
+		String title2 = (String) receivedObj.get("title");
 
 		// TODO 好友在线和日记存在判断
 
@@ -26,7 +27,7 @@ public class ReadyHandler extends AbstractBaseHandler {
 		JSONObject rtn = new JSONObject();
 		if (error != null) {
 			rtn.put("success", false);
-			rtn.put("message", error);
+			rtn.put("error", error);
 		} else {
 			rtn.put("success", true);
 			exchangeModel.ready(title2);

@@ -7,6 +7,7 @@ import org.sysuboys.diaryu.business.dao.IDiaryDao;
 import org.sysuboys.diaryu.business.dao.IUserDao;
 import org.sysuboys.diaryu.business.entity.Diary;
 import org.sysuboys.diaryu.business.entity.User;
+import org.sysuboys.diaryu.exception.NoSuchUser;
 
 @Service
 public class UserService implements IUserService {
@@ -44,6 +45,13 @@ public class UserService implements IUserService {
 	@Transactional
 	public void addDiary(Diary diary) {
 		diaryDao.create(diary);
+	}
+
+	public Diary findDiaryByUsernameAndTitle(String username, String title) {
+		User user = findByUsername(username);
+		if (user == null)
+			throw new NoSuchUser("username: " + username);
+		return diaryDao.findByUserIdAndTitle(user.getId(), title);
 	}
 
 }
