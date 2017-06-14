@@ -78,7 +78,7 @@
 		<property name="securityManager" ref="securityManager" /> </bean> -->
 
 
-	<bean
+	<!-- <bean
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
 	<bean
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
@@ -90,8 +90,6 @@
 		</property>
 	</bean>
 
-	<!-- Enables the Spring MVC @Controller programming model -->
-	<mvc:annotation-driven />
 	<bean id="mappingJacksonHttpMessageConverter"
 		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
 	<bean
@@ -103,15 +101,13 @@
 		</property>
 	</bean>
 
-	<context:component-scan base-package="cn.com" />
-
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/view/" />
 		<property name="suffix" value=".jsp" />
-	</bean>
+	</bean> -->
 
 	<!-- websocket消息处理bean -->
 	<!-- 以下2个只是测试 -->
