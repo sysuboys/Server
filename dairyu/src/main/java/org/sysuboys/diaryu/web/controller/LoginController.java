@@ -1,8 +1,5 @@
 package org.sysuboys.diaryu.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,6 +10,7 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,17 +30,18 @@ public class LoginController {
 	@Autowired
 	IFriendshipService friendshipService;
 
-	// 只是保留测试。
+	// 保留的HTTP登录界面
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public @ResponseBody Body get() {
-		return new Body();
+	public String get() {
+		return "login";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	protected @ResponseBody Body login(HttpServletRequest request, HttpServletResponse response, Model model) {
+	protected @ResponseBody String login(HttpServletRequest request, HttpServletResponse response, Model model) {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String rememberMe = request.getParameter("rememberMe");
+		logger.debug("username: " + username + ", password: " + password + ", rememberMe: " + rememberMe);
 
 		Subject subject = SecurityUtils.getSubject();
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe != null);
@@ -58,21 +57,16 @@ public class LoginController {
 			error = "server error";
 		}
 
-		Body body = new Body();
+		JSONObject object = new JSONObject();
 		if (error != null) {
-			body.error = error;
-			return body;
+			object.put("success", false);
+			object.put("error", error);
+		} else {
+			object.put("success", true);
+			object.put("username", username);
+			object.put("friends", friendshipService.findFriends(username));
 		}
-		body.username = username;
-		body.friends = friendshipService.findFriends(username);
-		return body;
-	}
-
-	class Body {
-		public boolean success = false;
-		public String error = null;
-		public String username = null;
-		public List<String> friends = new ArrayList<String>();
+		return object.toString();
 	}
 
 }

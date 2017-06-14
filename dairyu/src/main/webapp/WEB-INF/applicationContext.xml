@@ -20,11 +20,15 @@
 	<!-- 开启AOP监听 只对当前配置文件有效 -->
 	<aop:aspectj-autoproxy expose-proxy="true" />
 
+	<!-- 临时用于数据库数据的初始化 -->
+	<bean id="init" class="org.sysuboys.diaryu.application.Init"
+		init-method="doInit"></bean>
+
 	<!-- 数据库连接池 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url"
-			value="jdbc:mysql://localhost:3306/test_mts?createDatabaseIfNotExist=true&amp;useSSL=false" />
+			value="jdbc:mysql://localhost:3306/test_du?createDatabaseIfNotExist=true&amp;useSSL=false" />
 		<property name="username" value="root" />
 		<property name="password" value="root" />
 	</bean>

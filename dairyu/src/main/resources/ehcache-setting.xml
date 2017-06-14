@@ -8,11 +8,7 @@
 		overflowToDisk="true" timeToIdleSeconds="10" timeToLiveSeconds="20"
 		diskPersistent="false" diskExpiryThreadIntervalSeconds="120" />
 
-	<cache name="product" maxElementsInMemory="1000" eternal="false"
-		overflowToDisk="true" timeToIdleSeconds="10" timeToLiveSeconds="30" />
-	<cache name="role" maxElementsInMemory="1000" eternal="false"
-		overflowToDisk="true" timeToIdleSeconds="10" timeToLiveSeconds="30" />
-	<cache name="user_role" maxElementsInMemory="1000" eternal="false"
-		overflowToDisk="true" timeToIdleSeconds="10" timeToLiveSeconds="30" />
+	<!-- <cache name="product" maxElementsInMemory="1000" eternal="false"
+		overflowToDisk="true" timeToIdleSeconds="10" timeToLiveSeconds="30" /> -->
 
 </ehcache>

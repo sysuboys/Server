@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.sysuboys.diaryu.util.SecurityUtil;
+
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
@@ -36,7 +39,9 @@ public class User implements Serializable {
 	public User(String username, String password) {
 		super();
 		this.username = username;
-		this.password = password;
+		this.salt = SecurityUtil.generate32();
+		Md5Hash hash = new Md5Hash(password, this.salt);
+		this.password = hash.toString();
 	}
 
 	public Long getId() {
