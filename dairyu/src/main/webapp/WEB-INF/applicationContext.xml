@@ -17,27 +17,16 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
-	<!-- 开启AOP监听 只对当前配置文件有效 -->
-	<aop:aspectj-autoproxy expose-proxy="true" />
+	<!-- 开启AOP监听 只对当前配置文件有效
+	<aop:aspectj-autoproxy expose-proxy="true" /> -->
 
 	<!-- 临时用于数据库数据的初始化 -->
 	<bean id="init" class="org.sysuboys.diaryu.application.Init"
 		init-method="doInit"></bean>
 
-	<!-- 数据库连接池 -->
-	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url"
-			value="jdbc:mysql://localhost:3306/test_du?createDatabaseIfNotExist=true&amp;useSSL=false" />
-		<property name="username" value="root" />
-		<property name="password" value="root" />
-	</bean>
-	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<constructor-arg ref="dataSource" />
-	</bean>
 
 
-	<!-- shiro -->
+	<!-- #1 shiro -->
 
 	<!-- 凭证匹配器 -->
 	<bean id="credentialsMatcher"
@@ -50,18 +39,30 @@
 		<property name="credentialsMatcher" ref="credentialsMatcher" />
 	</bean>
 
+	<!-- RememberMe 摘自 http://jinnianshilongnian.iteye.com/blog/2031823 -->
+	<!-- 会话Cookie模板 -->
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<constructor-arg value="sid" />
+		<property name="httpOnly" value="true" />
+		<property name="maxAge" value="-1" />
+	</bean>
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<constructor-arg value="rememberMe" />
+		<property name="httpOnly" value="true" />
+		<property name="maxAge" value="2592000" /><!-- 30天 -->
+	</bean>
+
+	<!-- rememberMe管理器 -->
+	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+		<property name="cipherKey"
+			value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}" />
+		<property name="cookie" ref="rememberMeCookie" />
+	</bean>
+
 	<!-- 安全管理器 -->
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<property name="realm" ref="userRealm" />
 		<property name="rememberMeManager" ref="rememberMeManager" />
-	</bean>
-
-	<!-- 相当于调用SecurityUtils.setSecurityManager(securityManager) -->
-	<bean
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"
-			value="org.apache.shiro.SecurityUtils.setSecurityManager" />
-		<property name="arguments" ref="securityManager" />
 	</bean>
 
 	<!-- Shiro的Web过滤器 -->
@@ -88,17 +89,37 @@
 	</bean>
 
 	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+	
+	<!-- Enable Shiro Annotations for Spring-configured beans. Only run after -->
+	<!-- the lifecycleBeanProcessor has run: -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor" />
+	<bean
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
 
-
+	<!-- shiro缓存，拓展参考http://blog.csdn.net/weixin_35890630/article/details/52760965 -->
 	<!-- <bean id="ehCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager"> 
-		</bean> <bean id="defaultAdvisorAutoProxyCreator" class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"> 
-		<property name="proxyTargetClass" value="true" /> </bean> <bean id="authorizationAttributeSourceAdvisor" 
-		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor"> 
-		<property name="securityManager" ref="securityManager" /> </bean> -->
-	<!-- 以下用于thymleaf使用shiro标签 -->
-	<!-- <bean id="shiroDialect" class="at.pollux.thymeleaf.shiro.dialect.ShiroDialect" 
-		/> -->
+		</bean> -->
 
+
+
+	<!-- #2 persistence -->
+
+	<!-- 数据库连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/test_du?createDatabaseIfNotExist=true&amp;useSSL=false" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
+	
 	<!-- 以下参考http://www.cnblogs.com/share2015/p/5382759.html -->
 
 	<!--jpa管理工厂 -->
@@ -145,27 +166,8 @@
 	<!--<jpa:repositories base-package="org.sysuboys.diaryu.business.entity" entity-manager-factory-ref="entityManagerFactory"></jpa:repositories> -->
 
 
-	<!-- RememberMe 摘自 http://jinnianshilongnian.iteye.com/blog/2031823 -->
-	<!-- 会话Cookie模板 -->
-	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
-		<constructor-arg value="sid" />
-		<property name="httpOnly" value="true" />
-		<property name="maxAge" value="-1" />
-	</bean>
-	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
-		<constructor-arg value="rememberMe" />
-		<property name="httpOnly" value="true" />
-		<property name="maxAge" value="2592000" /><!-- 30天 -->
-	</bean>
 
-	<!-- rememberMe管理器 -->
-	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
-		<property name="cipherKey"
-			value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}" />
-		<property name="cookie" ref="rememberMeCookie" />
-	</bean>
-
-	<!-- ehcache -->
+	<!-- #3 ehcache -->
 	<cache:annotation-driven cache-manager="cacheManager" />  
 
 	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
@@ -176,21 +178,5 @@
 		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
 		<property name="configLocation" value="classpath:ehcache-setting.xml"></property>
 	</bean>
-	
-	<!--支持Json的Bean,配置ViewResolver。 可以用多个ViewResolver。 使用order属性排序。 InternalResourceViewResolver放在最后。 -->  
-    <!-- <bean  
-        class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">  
-        <property name="order" value="1" />  
-  
-        <property name="defaultViews">  
-            <list>  
-                JSON View  
-                <bean  
-                    class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">  
-                </bean>  
-            </list>  
-        </property>  
-    </bean>  --> 
-	
 
 </beans>

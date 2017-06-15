@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 改编自gtvg的gtvg-servlet.xml -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:websocket="http://www.springframework.org/schema/websocket"
@@ -13,22 +12,18 @@
         http://www.springframework.org/schema/websocket
         http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 
-	<context:annotation-config />
+	<!-- #1 Spring MVC -->
 
 	<mvc:annotation-driven />
 
 	<context:component-scan base-package="org.sysuboys.diaryu.web.controller" />
-	<!-- 不要忘记在springmvc的配置文件中配置对此类的自动扫描 -->
 	<context:component-scan base-package="org.sysuboys.diaryu.web.websocket" />
 
 	<mvc:resources mapping="/images/**" location="/images/" />
 	<mvc:resources mapping="/css/**" location="/css/" />
 	<mvc:resources mapping="/js/**" location="/js/" />
 
-
-	<!-- SpringResourceTemplateResolver automatically integrates with Spring's 
-		own -->
-	<!-- resource resolution infrastructure, which is highly recommended. -->
+	<!-- 自gtvg的gtvg-servlet.xml -->
 	<bean id="templateResolver"
 		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
 		<property name="prefix" value="/WEB-INF/templates/" />
@@ -46,19 +41,12 @@
 	<!-- enables Spring's own MessageSource message resolution mechanisms. -->
 	<bean id="templateEngine" class="org.thymeleaf.TemplateEngine">
 		<property name="templateResolver" ref="templateResolver" />
-		<!-- 用于thymleaf使用shiro标签 -->
+		<!-- 使用shiro标签 -->
 		<property name="additionalDialects">
 			<set>
 				<bean class="at.pollux.thymeleaf.shiro.dialect.ShiroDialect" />
 			</set>
 		</property>
-		<!-- Enabling the SpringEL compiler with Spring 4.2.4 or newer can speed 
-			up -->
-		<!-- execution in most scenarios, but might be incompatible with specific -->
-		<!-- cases when expressions in one template are reused across different 
-			data -->
-		<!-- ypes, so this flag is "false" by default for safer backwards -->
-		<!-- compatibility. -->
 	</bean>
 
 	<bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
@@ -67,49 +55,10 @@
 		<property name="characterEncoding" value="UTF-8" />
 	</bean>
 
-	<!--bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver"> 
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" 
-		/> <property name="prefix" value="/WEB-INF/jsp/" /> <property name="suffix" 
-		value=".jsp" /> </bean -->
-
-	<!-- 解决Shiro注解不起作用 -->
-	<!-- <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" 
-		depends-on="lifecycleBeanPostProcessor" /> <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor"> 
-		<property name="securityManager" ref="securityManager" /> </bean> -->
 
 
-	<!-- <bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
-	<bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-				<bean
-					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
-			</list>
-		</property>
-	</bean>
-
-	<bean id="mappingJacksonHttpMessageConverter"
-		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
-	<bean
-		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-				<ref bean="mappingJacksonHttpMessageConverter" />
-			</list>
-		</property>
-	</bean>
-
-	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/view/" />
-		<property name="suffix" value=".jsp" />
-	</bean> -->
-
-	<!-- websocket消息处理bean -->
+	<!-- #2 websocket消息处理bean -->
+	
 	<!-- 以下2个只是测试 -->
 	<bean id="WebSocketHandler" class="org.sysuboys.diaryu.web.websocket.WebSocketHandler" />
 	<websocket:handlers allowed-origins="*">
@@ -130,6 +79,7 @@
 		<websocket:sockjs />
 	</websocket:handlers>
 	
+	<!-- diaryu的4个Handler -->
 	<bean id="inviteHandler" class="org.sysuboys.diaryu.web.websocket.InviteHandler" />
 	<websocket:handlers allowed-origins="*">
 		<!-- 配置消息处理bean和路径的映射关系 -->
@@ -163,7 +113,6 @@
 		</websocket:handshake-interceptors>
 	</websocket:handlers>
 	
-	
 	<!-- 配置websocket消息的最大缓冲区长度 -->
 	<bean
 		class="org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean">
@@ -171,6 +120,15 @@
 		<property name="maxBinaryMessageBufferSize" value="8192" />
 	</bean>
 
+
+
+	<!-- <bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/view/" />
+		<property name="suffix" value=".jsp" />
+	</bean> -->
 
 </beans>
 

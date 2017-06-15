@@ -5,8 +5,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import sun.misc.BASE64Encoder;
-
 /**
  * @author origin from cevencheng ({@linkplain l1
  *         http://blog.csdn.net/liang0000zai/article/details/51493744}) updated
