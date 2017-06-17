@@ -73,15 +73,6 @@
 			<value>
 				/signup = anon
 				/login = anon
-				/logout = user
-				
-				/upload = authc
-				/getFile = authc
-				
-				/invite = authc
-				/isInvited = authc
-				/ready = authc
-				/match = authc
 				
 				/test=authc,roles[vip],perms[user:delete]
 			</value>

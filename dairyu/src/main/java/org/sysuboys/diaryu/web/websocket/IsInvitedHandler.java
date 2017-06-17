@@ -17,10 +17,11 @@ public class IsInvitedHandler extends AbstractBaseHandler {
 		if (exchangeModel == null) {
 			rtn.put("invited", false);
 		} else {
-			rtn.put("invited", false);
+			rtn.put("invited", true);
 			rtn.put("inviter", exchangeModel.getAnother(username));
 			rtn.put("title", exchangeModel.getFriendTitle(username));
 		}
+		logger.debug(rtn.toString());
 
 		TextMessage returnMessage = new TextMessage(rtn.toString());
 		synchronized (session) {

@@ -4,12 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.sysuboys.diaryu.business.model.Constant;
 import org.sysuboys.diaryu.business.service.IFriendshipService;
+import org.sysuboys.diaryu.business.service.ILoginService;
 import org.sysuboys.diaryu.business.service.IUserService;
 
 @Controller
@@ -27,6 +23,8 @@ public class LoginController {
 
 	@Autowired
 	IUserService userService;
+	@Autowired
+	ILoginService loginService;
 	@Autowired
 	IFriendshipService friendshipService;
 
@@ -43,19 +41,12 @@ public class LoginController {
 		String rememberMe = request.getParameter("rememberMe");
 		logger.debug("username: " + username + ", password: " + password + ", rememberMe: " + rememberMe);
 
-		Subject subject = SecurityUtils.getSubject();
-		UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe != null);
+		String sessionid = loginService.login(username, password);
 		String error = null;
-
-		try {
-			subject.login(token);
-		} catch (UnknownAccountException e) {
-			error = "wrong username";
-		} catch (IncorrectCredentialsException e) {
-			error = "wrong password";
-		} catch (AuthenticationException e) {
-			error = "server error";
-		}
+		if (sessionid == null)
+			error = "wrong username or password";
+		else
+			request.getSession().setAttribute(Constant.sessionid, sessionid);
 
 		JSONObject object = new JSONObject();
 		if (error != null) {

@@ -15,22 +15,28 @@ public class ReadyHandler extends AbstractBaseHandler {
 		JSONObject receivedObj = new JSONObject(message.getPayload());
 		String title2 = (String) receivedObj.get("title");
 
-		// TODO 好友在线和日记存在判断
-
 		String error = null;
 		ExchangeModel exchangeModel = map.get(username);
 		if (exchangeModel == null)
 			error = "you are not invited";
 		else if (exchangeModel.getInviter().equals(username))
 			error = "inviter doesn't have to get ready";
+		else if (title2 == null)
+			error = "parameter \"title\" not found or was wrong in type";
+		else if (userService.findDiaryByUsernameAndTitle(username, title2) == null)
+			error = "you have no diary titled \"" + title2 + "\"";
 
 		JSONObject rtn = new JSONObject();
 		if (error != null) {
 			rtn.put("success", false);
 			rtn.put("error", error);
+
+			logger.debug("return error: " + error);
 		} else {
 			rtn.put("success", true);
 			exchangeModel.ready(title2);
+
+			logger.debug(username + " get ready");
 		}
 
 		TextMessage returnMessage = new TextMessage(rtn.toString());

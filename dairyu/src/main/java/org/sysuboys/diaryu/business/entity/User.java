@@ -36,12 +36,18 @@ public class User implements Serializable {
 		super();
 	}
 
-	public User(String username, String password) {
+	public User(String username, String clearPassword) {
 		super();
 		this.username = username;
 		this.salt = SecurityUtil.generate32();
-		Md5Hash hash = new Md5Hash(password, this.salt);
+		Md5Hash hash = new Md5Hash(clearPassword, this.salt);
 		this.password = hash.toString();
+	}
+	
+	// 明文
+	public boolean checkPassword(String clearPassword) {
+		Md5Hash hash = new Md5Hash(clearPassword, this.salt);
+		return this.password.equals(hash.toString());
 	}
 
 	public Long getId() {

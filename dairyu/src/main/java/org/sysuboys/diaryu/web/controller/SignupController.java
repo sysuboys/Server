@@ -3,7 +3,6 @@ package org.sysuboys.diaryu.web.controller;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,21 +27,14 @@ public class SignupController {
 		// TODO 用户名合法性和密码安全性
 
 		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 
 		if (userService.exist(username)) {
 			model.addAttribute("msg", "username already exists");
 			return "signup";
 		}
 
-		// TODO 逻辑转移
-		String salt = username; // TODO 设置salt为什么比较好
-		Md5Hash hash = new Md5Hash(request.getParameter("password"), salt); // MD5加盐加密
-		String password = hash.toString();
-
-		User user = new User();
-		user.setUsername(username);
-		user.setPassword(password);
-		user.setSalt(salt);
+		User user = new User(username, password);
 		userService.create(user);
 
 		return "redirect:/login";
