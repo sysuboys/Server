@@ -9,14 +9,14 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.sysuboys.diaryu.business.entity.User;
-import org.sysuboys.diaryu.business.service.IUserService;
+import org.sysuboys.diaryu.business.service.UserService;
 
 public class UserRealm extends AuthorizingRealm {
 
 	static Logger logger = Logger.getLogger(UserRealm.class);
 
 	@Autowired
-	private IUserService userService;
+	private UserService userService;
 
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {

@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.sysuboys.diaryu.business.service.IDiaryFileService;
+import org.sysuboys.diaryu.business.service.DiaryService;
 
 @Controller
 public class FileController {
 
 	@Autowired
-	IDiaryFileService diaryFileService;
+	DiaryService diaryFileService;
 
 	@RequestMapping("/try_upload")
 	public String hello() {
@@ -67,19 +67,19 @@ public class FileController {
 		// model.addAttribute("fileUrl", request.getContextPath() + "/upload/" +
 		// fileName);
 		
-		try {
-			// 这里将上传得到的文件保存至 d:\\temp\\file 目录
-			diaryFileService.create("2.txt", file.getInputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			// 这里将上传得到的文件保存至 d:\\temp\\file 目录
+//			diaryFileService.create("2.txt", file.getInputStream());
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
 		return "login";
 	}
 
 	@RequestMapping("/try_download")
 	public @ResponseBody ResponseEntity<byte[]> getFile(HttpServletRequest request) throws IOException {
-		File file = diaryFileService.get("2.txt");
+		File file = diaryFileService.getFile("2.txt");
 		// String dfileName = new String(fileName.getBytes("gb2312"),
 		// "iso8859-1");
 		HttpHeaders headers = new HttpHeaders();
@@ -90,7 +90,7 @@ public class FileController {
 
 	@RequestMapping("/try_download_FORBIDDEN")
 	public @ResponseBody ResponseEntity<byte[]> getFile4(HttpServletRequest request) throws IOException {
-		File file = diaryFileService.get("2.txt");
+		File file = diaryFileService.getFile("2.txt");
 		// String dfileName = new String(fileName.getBytes("gb2312"),
 		// "iso8859-1");
 		HttpHeaders headers = new HttpHeaders();

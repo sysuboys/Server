@@ -2,7 +2,6 @@ package org.sysuboys.diaryu.web.controller;
 
 import java.io.File;
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
@@ -23,11 +22,12 @@ import org.sysuboys.diaryu.business.entity.Diary;
 import org.sysuboys.diaryu.business.entity.User;
 import org.sysuboys.diaryu.business.model.Constant;
 import org.sysuboys.diaryu.business.model.ExchangeModel;
-import org.sysuboys.diaryu.business.service.IExchangeModelService;
-import org.sysuboys.diaryu.business.service.IDiaryFileService;
-import org.sysuboys.diaryu.business.service.ILoginService;
-import org.sysuboys.diaryu.business.service.IUserService;
+import org.sysuboys.diaryu.business.service.ExchangeModelService;
+import org.sysuboys.diaryu.business.service.DiaryService;
+import org.sysuboys.diaryu.business.service.LoginService;
+import org.sysuboys.diaryu.business.service.UserService;
 import org.sysuboys.diaryu.exception.ClientError;
+import org.sysuboys.diaryu.exception.EntityExistError;
 import org.sysuboys.diaryu.exception.NoSuchUser;
 import org.sysuboys.diaryu.exception.ServerError;
 
@@ -37,19 +37,19 @@ public class DiaryController {
 	static Logger logger = Logger.getLogger(DiaryController.class);
 
 	@Autowired
-	IDiaryFileService diaryFileService;
+	DiaryService diaryService;
 	@Autowired
-	IUserService userService;
+	UserService userService;
 	@Autowired
-	ILoginService loginService;
+	LoginService loginService;
 	@Autowired
-	IExchangeModelService exchangeModelMap;
+	ExchangeModelService exchangeModelMap;
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public @ResponseBody JSONObject upload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
-			@RequestParam("title") String title) {
+	public @ResponseBody String upload(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
 
 		logger.debug("/upload POST");
+		logger.debug("encoding: " + request.getCharacterEncoding());
 
 		JSONObject object = new JSONObject();
 		try {
@@ -65,17 +65,18 @@ public class DiaryController {
 			if (user == null)
 				throw new ServerError("can not find user by username=" + username);
 
+			String title = file.getOriginalFilename();
 			logger.info("user " + username + " upload diary " + title);
 
 			Diary diary = new Diary(user, title);
 			try {
-				String filename = diary.getFilename();
-				diaryFileService.create(filename, file.getInputStream());
-				logger.info(username + "'s diary " + title + " saved in " + filename);
+				diaryService.create(diary, file.getInputStream());
+				logger.info(username + "'s diary " + title + " saved in " + diary.getFilename());
 			} catch (IOException e) {
 				throw new ServerError("IOException: " + e.getMessage());
+			} catch (EntityExistError e) {
+				throw new ClientError("diary exist:" + title);
 			}
-			userService.addDiary(diary);
 
 			object.put("success", true);
 			object.put("title", title);
@@ -89,7 +90,7 @@ public class DiaryController {
 			object.put("success", false);
 			object.put("error", "server error");
 		}
-		return object;
+		return object.toString();
 
 	}
 
@@ -115,13 +116,13 @@ public class DiaryController {
 			String title = exchangeModel.getFriendTitle(username);
 			Diary diary;
 			try {
-				diary = userService.findDiaryByUsernameAndTitle(username, title);
+				diary = diaryService.findByUsernameAndTitle(username, title);
 			} catch (NoSuchUser e) {
 				throw new ServerError("can not find user by username=" + username);
 			}
 			exchangeModelMap.get().remove(username);
 
-			File file = diaryFileService.get(diary.getFilename());
+			File file = diaryService.getFile(diary.getFilename());
 			// String dfileName = new String(fileName.getBytes("gb2312"),
 			// "iso8859-1");
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);

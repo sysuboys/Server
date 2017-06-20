@@ -1,29 +1,17 @@
 package org.sysuboys.diaryu.business.dao;
 
-import org.springframework.stereotype.Repository;
 import org.sysuboys.diaryu.business.entity.User;
 
-import java.util.List;
+public interface UserDao {
 
-import javax.persistence.Query;
+	void create(User user);
 
-@Repository
-public class UserDao extends AbstractJpaDAO<User> implements IUserDao {
+	User update(User user);
 
-	public UserDao() {
-		super();
-		setClazz(User.class);
-	}
+	void delete(long userId);
 
-	@SuppressWarnings("unchecked")
-	public User findByUsername(String username) {
-		String sql = "select id, username, password, salt from users u where username = :username";
-		Query query = entityManager.createNativeQuery(sql, User.class);
-		query.setParameter("username", username);
-		List<User> list = query.getResultList();
-		if (list.isEmpty())
-			return null;
-		return list.get(0);
-	}
+	User findOne(long userId);
+
+	User findByUsername(String username);
 
 }

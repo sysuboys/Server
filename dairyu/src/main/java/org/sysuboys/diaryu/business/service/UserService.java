@@ -1,57 +1,16 @@
 package org.sysuboys.diaryu.business.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.sysuboys.diaryu.business.dao.IDiaryDao;
-import org.sysuboys.diaryu.business.dao.IUserDao;
-import org.sysuboys.diaryu.business.entity.Diary;
 import org.sysuboys.diaryu.business.entity.User;
-import org.sysuboys.diaryu.exception.NoSuchUser;
+import org.sysuboys.diaryu.exception.EntityExistError;
 
-@Service
-public class UserService implements IUserService {
+public interface UserService {
 
-	@Autowired
-	IUserDao userDao;
-	@Autowired
-	IDiaryDao diaryDao;
+	boolean exist(String username);
 
-	public boolean exist(String username) {
-		return userDao.findByUsername(username) != null;
-	}
+	void create(User user) throws EntityExistError;
 
-	@Transactional
-	public void create(User user) {
-		userDao.create(user);
-	}
+	void changePassword(Long userId, String newPassword);
 
-	public boolean checkPassword(String username, String password) {
-		User user = userDao.findByUsername(username);
-		return user != null && user.getPassword() == password;
-	}
-
-	@Transactional
-	public void changePassword(Long userId, String newPassword) {
-		User user = userDao.findOne(userId);
-		user.setPassword(newPassword);
-		userDao.update(user);
-	}
-
-	public User findByUsername(String username) {
-		return userDao.findByUsername(username);
-	}
-
-	@Transactional
-	public void addDiary(Diary diary) {
-		diaryDao.create(diary);
-	}
-
-	public Diary findDiaryByUsernameAndTitle(String username, String title) throws NoSuchUser {
-		User user = findByUsername(username);
-		if (user == null)
-			throw new NoSuchUser(username);
-		return diaryDao.findByUserIdAndTitle(user.getId(), title);
-	}
+	User findByUsername(String username);
 
 }

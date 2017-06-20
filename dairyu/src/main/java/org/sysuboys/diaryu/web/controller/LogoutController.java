@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.sysuboys.diaryu.business.model.Constant;
-import org.sysuboys.diaryu.business.service.ILoginService;
+import org.sysuboys.diaryu.business.service.LoginService;
 
 @Controller
 public class LogoutController {
@@ -15,7 +15,7 @@ public class LogoutController {
 	static Logger logger = Logger.getLogger(LogoutController.class);
 
 	@Autowired
-	ILoginService loginService;
+	LoginService loginService;
 
 	@RequestMapping("/logout")
 	public String get(HttpServletRequest request) {

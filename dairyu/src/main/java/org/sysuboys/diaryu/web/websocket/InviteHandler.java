@@ -33,9 +33,9 @@ public class InviteHandler extends AbstractBaseHandler {
 			if (title == null)
 				throw new ClientError("parameter \"title\" is not String");
 			try {
-				if (friendshipService.findFriends(username).contains(invitee))
+				if (friendshipService.findFriends(username).contains(invitee) == false)
 					throw new ClientError("you have no friend \"" + invitee + "\"");
-				if (userService.findDiaryByUsernameAndTitle(username, title) == null)
+				if (diaryService.findByUsernameAndTitle(username, title) == null)
 					throw new ClientError("you have no diary titled \"" + title + "\"");
 			} catch (NoSuchUser e) {
 				throw new ServerError("can not find username \"" + username + "\" while connecting");
@@ -51,6 +51,7 @@ public class InviteHandler extends AbstractBaseHandler {
 					throw new ClientError("you have already an exchange");
 				if (exchangeMap.containsKey(invitee))
 					throw new ClientError("your friend \"" + invitee + "\" has already an exchange");
+				logger.debug("7");
 				ExchangeModel model = new ExchangeModel(username, invitee, title);
 				exchangeMap.put(username, model);
 				exchangeMap.put(invitee, model);

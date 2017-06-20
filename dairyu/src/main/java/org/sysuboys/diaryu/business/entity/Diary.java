@@ -62,4 +62,12 @@ public class Diary implements Serializable {
 		this.filename = filename;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 }

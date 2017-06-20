@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.sysuboys.diaryu.business.model.Constant;
-import org.sysuboys.diaryu.business.service.IFriendshipService;
-import org.sysuboys.diaryu.business.service.ILoginService;
-import org.sysuboys.diaryu.business.service.IUserService;
+import org.sysuboys.diaryu.business.service.FriendshipService;
+import org.sysuboys.diaryu.business.service.LoginService;
+import org.sysuboys.diaryu.business.service.UserService;
 import org.sysuboys.diaryu.exception.ClientError;
 import org.sysuboys.diaryu.exception.NoSuchUser;
 import org.sysuboys.diaryu.exception.ServerError;
@@ -25,11 +25,11 @@ public class LoginController {
 	static Logger logger = Logger.getLogger(LoginController.class);
 
 	@Autowired
-	IUserService userService;
+	UserService userService;
 	@Autowired
-	ILoginService loginService;
+	LoginService loginService;
 	@Autowired
-	IFriendshipService friendshipService;
+	FriendshipService friendshipService;
 
 	// 保留的HTTP登录界面
 	@RequestMapping(value = "/login", method = RequestMethod.GET)

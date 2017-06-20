@@ -12,26 +12,29 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.sysuboys.diaryu.business.model.Constant;
 import org.sysuboys.diaryu.business.model.ExchangeModel;
 import org.sysuboys.diaryu.business.model.SessionType;
-import org.sysuboys.diaryu.business.service.IExchangeModelService;
-import org.sysuboys.diaryu.business.service.IFriendshipService;
-import org.sysuboys.diaryu.business.service.ILoginService;
-import org.sysuboys.diaryu.business.service.IUserService;
-import org.sysuboys.diaryu.business.service.IWebSocketSessionService;
+import org.sysuboys.diaryu.business.service.DiaryService;
+import org.sysuboys.diaryu.business.service.ExchangeModelService;
+import org.sysuboys.diaryu.business.service.FriendshipService;
+import org.sysuboys.diaryu.business.service.LoginService;
+import org.sysuboys.diaryu.business.service.UserService;
+import org.sysuboys.diaryu.business.service.WebSocketSessionService;
 
 public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 
 	Logger logger;
 
 	@Autowired
-	IWebSocketSessionService webSocketSessionService;
+	WebSocketSessionService webSocketSessionService;
 	@Autowired
-	IExchangeModelService exchangeModelService;
+	ExchangeModelService exchangeModelService;
 	@Autowired
-	ILoginService loginService;
+	LoginService loginService;
 	@Autowired
-	IUserService userService;
+	UserService userService;
 	@Autowired
-	IFriendshipService friendshipService;
+	DiaryService diaryService;
+	@Autowired
+	FriendshipService friendshipService;
 
 	String username;
 	Map<String, ExchangeModel> exchangeMap;

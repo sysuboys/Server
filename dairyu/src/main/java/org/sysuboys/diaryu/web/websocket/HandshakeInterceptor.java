@@ -10,14 +10,14 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 import org.sysuboys.diaryu.business.model.Constant;
-import org.sysuboys.diaryu.business.service.ILoginService;
+import org.sysuboys.diaryu.business.service.LoginService;
 
 public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor {
 
 	static Logger logger = Logger.getLogger(HandshakeInterceptor.class);
 
 	@Autowired
-	ILoginService loginService;
+	LoginService loginService;
 
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,

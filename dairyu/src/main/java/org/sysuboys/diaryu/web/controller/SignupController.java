@@ -9,13 +9,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.sysuboys.diaryu.business.entity.User;
-import org.sysuboys.diaryu.business.service.IUserService;
+import org.sysuboys.diaryu.business.service.UserService;
+import org.sysuboys.diaryu.exception.EntityExistError;
 
 @Controller
 public class SignupController {
 
 	@Autowired
-	private IUserService userService;
+	private UserService userService;
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
 	public String get() {
@@ -29,13 +30,13 @@ public class SignupController {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 
-		if (userService.exist(username)) {
+		User user = new User(username, password);
+		try {
+			userService.create(user);
+		} catch (EntityExistError e) {
 			model.addAttribute("msg", "username already exists");
 			return "signup";
 		}
-
-		User user = new User(username, password);
-		userService.create(user);
 
 		return "redirect:/login";
 	}

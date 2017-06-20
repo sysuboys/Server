@@ -35,7 +35,7 @@ public class ReadyHandler extends AbstractBaseHandler {
 			if (exchangeModel.getInviter().equals(username))
 				throw new ClientError("inviter doesn't have to get ready");
 			try {
-				if (userService.findDiaryByUsernameAndTitle(username, title2) == null)
+				if (diaryService.findByUsernameAndTitle(username, title2) == null)
 					throw new ClientError("you have no diary titled \"" + title2 + "\"");
 			} catch (NoSuchUser e) {
 				throw new ServerError("can not find username \"" + username + "\" while connecting");
@@ -46,7 +46,7 @@ public class ReadyHandler extends AbstractBaseHandler {
 
 			JSONObject rtnObj = new JSONObject();
 			rtnObj.put("success", true);
-			
+
 			TextMessage rtnMsg = new TextMessage(rtnObj.toString());
 			synchronized (session) {
 				session.sendMessage(rtnMsg);
