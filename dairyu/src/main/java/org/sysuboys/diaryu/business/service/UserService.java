@@ -47,10 +47,10 @@ public class UserService implements IUserService {
 		diaryDao.create(diary);
 	}
 
-	public Diary findDiaryByUsernameAndTitle(String username, String title) {
+	public Diary findDiaryByUsernameAndTitle(String username, String title) throws NoSuchUser {
 		User user = findByUsername(username);
 		if (user == null)
-			throw new NoSuchUser("username: " + username);
+			throw new NoSuchUser(username);
 		return diaryDao.findByUserIdAndTitle(user.getId(), title);
 	}
 

@@ -8,7 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.sysuboys.diaryu.business.model.SessionType;
 
 @Service
-public class WebSocketSessionMap implements IWebSocketSessionMap {
+public class WebSocketSessionService implements IWebSocketSessionService {
 
 	Map<String, Map<SessionType, WebSocketSession>> map = new ConcurrentHashMap<String, Map<SessionType, WebSocketSession>>();
 

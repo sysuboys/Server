@@ -15,6 +15,9 @@ import org.sysuboys.diaryu.business.model.Constant;
 import org.sysuboys.diaryu.business.service.IFriendshipService;
 import org.sysuboys.diaryu.business.service.ILoginService;
 import org.sysuboys.diaryu.business.service.IUserService;
+import org.sysuboys.diaryu.exception.ClientError;
+import org.sysuboys.diaryu.exception.NoSuchUser;
+import org.sysuboys.diaryu.exception.ServerError;
 
 @Controller
 public class LoginController {
@@ -39,23 +42,34 @@ public class LoginController {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String rememberMe = request.getParameter("rememberMe");
-		logger.debug("username: " + username + ", password: " + password + ", rememberMe: " + rememberMe);
-
-		String sessionid = loginService.login(username, password);
-		String error = null;
-		if (sessionid == null)
-			error = "wrong username or password";
-		else
-			request.getSession().setAttribute(Constant.sessionid, sessionid);
+		logger.info("username: " + username + ", password: " + password + ", rememberMe: " + rememberMe);
 
 		JSONObject object = new JSONObject();
-		if (error != null) {
-			object.put("success", false);
-			object.put("error", error);
-		} else {
+		try {
+
+			String sessionid = loginService.login(username, password);
+			if (sessionid == null)
+				throw new ClientError("wrong username or password");
+			request.getSession().setAttribute(Constant.sessionid, sessionid);
+			
+			logger.info(username + " login");
+
 			object.put("success", true);
 			object.put("username", username);
-			object.put("friends", friendshipService.findFriends(username));
+			try {
+				object.put("friends", friendshipService.findFriends(username));
+			} catch (NoSuchUser e) {
+				throw new ServerError("can not find user " + username + " after login");
+			}
+
+		} catch (ClientError e) {
+			logger.warn(e.getMessage());
+			object.put("success", false);
+			object.put("error", e.getMessage());
+		} catch (ServerError e) {
+			logger.error(e.getMessage());
+			object.put("success", false);
+			object.put("error", "server error");
 		}
 		return object.toString();
 	}

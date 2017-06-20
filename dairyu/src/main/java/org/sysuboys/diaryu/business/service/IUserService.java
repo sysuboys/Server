@@ -2,6 +2,7 @@ package org.sysuboys.diaryu.business.service;
 
 import org.sysuboys.diaryu.business.entity.Diary;
 import org.sysuboys.diaryu.business.entity.User;
+import org.sysuboys.diaryu.exception.NoSuchUser;
 
 public interface IUserService {
 
@@ -17,6 +18,6 @@ public interface IUserService {
 
 	void addDiary(Diary diary);
 
-	Diary findDiaryByUsernameAndTitle(String username, String title);
+	Diary findDiaryByUsernameAndTitle(String username, String title) throws NoSuchUser;
 
 }

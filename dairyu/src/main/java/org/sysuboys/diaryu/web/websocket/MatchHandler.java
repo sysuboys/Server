@@ -1,59 +1,73 @@
 package org.sysuboys.diaryu.web.websocket;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.sysuboys.diaryu.business.model.ExchangeModel;
 import org.sysuboys.diaryu.business.model.SessionType;
+import org.sysuboys.diaryu.exception.ClientError;
+import org.sysuboys.diaryu.exception.NoSessionError;
 
 public class MatchHandler extends AbstractBaseHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+
 		super.handleTextMessage(session, message);
 
-		JSONObject receivedObj = new JSONObject(message.getPayload());
-		Integer position = (Integer) receivedObj.get("position");
+		try {
 
-		String error = null;
-		ExchangeModel exchangeModel = map.get(username);
-		if (position == null)
-			error = "parameter \"position\" not found or was wrong in type";
-		else if (exchangeModel == null)
-			error = "you didn't invite and are not invited";
-		else if (!exchangeModel.isReady())
-			error = exchangeModel.getInviter().equals(username) ? "your friend are not ready" : "you didn't get ready";
+			Integer position = null;
+			try {
+				JSONObject rcvObj = new JSONObject(message.getPayload());
+				position = (Integer) rcvObj.get("position");
+			} catch (JSONException e) {
+				throw new ClientError("JSON format error");
+			}
 
-		JSONObject rtn = new JSONObject();
-		if (error != null) {
-			rtn.put("success", false);
-			rtn.put("error", error);
+			ExchangeModel model = exchangeMap.get(username);
+			if (position == null)
+				throw new ClientError("parameter \"position\" is not Integer");
+			if (model == null)
+				throw new ClientError("you didn't invite and are not invited");
+			if (!model.isReady())
+				throw new ClientError(
+						model.getInviter().equals(username) ? "your friend are not ready" : "you didn't get ready");
 
-			logger.debug("return error: " + error);
-		} else {
-			boolean result = exchangeModel.match(username, position);
-			rtn.put("success", result);
+			boolean success = model.match(username, position);
+			logger.info(username + " is at position " + position);
 
-			logger.debug("match result: " + result);
-		}
+			JSONObject informObj = new JSONObject();
+			informObj.put("success", success);
+			logger.debug("match result: " + success);
 
-		TextMessage informMessage = new TextMessage(rtn.toString());
-		synchronized (session) {
-			session.sendMessage(informMessage);
-		}
+			TextMessage informMsg = new TextMessage(informObj.toString());
+			synchronized (session) {
+				session.sendMessage(informMsg);
+			}
 
-		if ((Boolean) rtn.get("success")) { // 成功后也立即通知另一个人
-			String friend = exchangeModel.getAnother(username);
-			WebSocketSession friendSession = webSocketSessionMap.get(friend).get(SessionType.match);
-			if (friendSession == null) {
-				logger.warn(username + "'s friend " + friend + "have no \"match\" session, exchange abort");
-				map.remove(username);
-				map.remove(friend);
-			} else
+			if (success) { // 成功后也立即通知另一个人
+				String friend = model.getAnother(username);
+				WebSocketSession friendSession = webSocketSessionService.get(friend).get(SessionType.match);
+				if (friendSession == null)
+					throw new NoSessionError(friend + " have no \"match\" session", friend);
 				synchronized (friendSession) {
-					friendSession.sendMessage(informMessage);
+					friendSession.sendMessage(informMsg);
 				}
+			}
+
+		} catch (ClientError e) {
+			logger.warn(e.getMessage());
+			sendJSONErrorMessage(session, e.getMessage());
+		} catch (NoSessionError e) {
+			logger.warn(e.getMessage());
+			logger.warn("exchange abort");
+			String friend = e.getUsername();
+			exchangeMap.remove(friend);
+			exchangeMap.remove(username);
 		}
+
 	}
 
 	@Override

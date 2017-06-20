@@ -10,23 +10,25 @@ public class IsInvitedHandler extends AbstractBaseHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+
 		super.handleTextMessage(session, message);
 
-		JSONObject rtn = new JSONObject();
-		ExchangeModel exchangeModel = map.get(username);
-		if (exchangeModel == null) {
-			rtn.put("invited", false);
+		JSONObject rtnObj = new JSONObject();
+		ExchangeModel model = exchangeMap.get(username);
+		if (model == null) {
+			rtnObj.put("invited", false);
 		} else {
-			rtn.put("invited", true);
-			rtn.put("inviter", exchangeModel.getAnother(username));
-			rtn.put("title", exchangeModel.getFriendTitle(username));
+			rtnObj.put("invited", true);
+			rtnObj.put("inviter", model.getAnother(username));
+			rtnObj.put("title", model.getFriendTitle(username));
 		}
-		logger.debug(rtn.toString());
 
-		TextMessage returnMessage = new TextMessage(rtn.toString());
+		TextMessage rtnMsg = new TextMessage(rtnObj.toString());
 		synchronized (session) {
-			session.sendMessage(returnMessage);
+			session.sendMessage(rtnMsg);
 		}
+		logger.info("send back: " + rtnObj.toString());
+
 	}
 
 	@Override

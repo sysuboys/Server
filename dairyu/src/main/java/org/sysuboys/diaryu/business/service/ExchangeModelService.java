@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.sysuboys.diaryu.business.model.ExchangeModel;
 
 @Service
-public class ExchangeModelMap implements IExchangeModelMap {
+public class ExchangeModelService implements IExchangeModelService {
 
 	Map<String, ExchangeModel> map = new ConcurrentHashMap<String, ExchangeModel>();
 

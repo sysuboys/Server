@@ -1,48 +1,66 @@
 package org.sysuboys.diaryu.web.websocket;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.sysuboys.diaryu.business.model.ExchangeModel;
 import org.sysuboys.diaryu.business.model.SessionType;
+import org.sysuboys.diaryu.exception.ClientError;
+import org.sysuboys.diaryu.exception.NoSuchUser;
+import org.sysuboys.diaryu.exception.ServerError;
 
 public class ReadyHandler extends AbstractBaseHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+
 		super.handleTextMessage(session, message);
 
-		JSONObject receivedObj = new JSONObject(message.getPayload());
-		String title2 = (String) receivedObj.get("title");
+		try {
 
-		String error = null;
-		ExchangeModel exchangeModel = map.get(username);
-		if (exchangeModel == null)
-			error = "you are not invited";
-		else if (exchangeModel.getInviter().equals(username))
-			error = "inviter doesn't have to get ready";
-		else if (title2 == null)
-			error = "parameter \"title\" not found or was wrong in type";
-		else if (userService.findDiaryByUsernameAndTitle(username, title2) == null)
-			error = "you have no diary titled \"" + title2 + "\"";
+			String title2 = null;
+			try {
+				JSONObject rcvObj = new JSONObject(message.getPayload());
+				title2 = (String) rcvObj.get("title");
+			} catch (JSONException e) {
+				throw new ClientError("JSON format error");
+			}
 
-		JSONObject rtn = new JSONObject();
-		if (error != null) {
-			rtn.put("success", false);
-			rtn.put("error", error);
+			ExchangeModel exchangeModel = exchangeMap.get(username);
+			if (title2 == null)
+				throw new ClientError("parameter \"title\" is not String");
+			if (exchangeModel == null)
+				throw new ClientError("you are not invited");
+			if (exchangeModel.getInviter().equals(username))
+				throw new ClientError("inviter doesn't have to get ready");
+			try {
+				if (userService.findDiaryByUsernameAndTitle(username, title2) == null)
+					throw new ClientError("you have no diary titled \"" + title2 + "\"");
+			} catch (NoSuchUser e) {
+				throw new ServerError("can not find username \"" + username + "\" while connecting");
+			}
 
-			logger.debug("return error: " + error);
-		} else {
-			rtn.put("success", true);
 			exchangeModel.ready(title2);
+			logger.info(username + " get ready");
 
-			logger.debug(username + " get ready");
+			JSONObject rtnObj = new JSONObject();
+			rtnObj.put("success", true);
+			
+			TextMessage rtnMsg = new TextMessage(rtnObj.toString());
+			synchronized (session) {
+				session.sendMessage(rtnMsg);
+			}
+			logger.info("send back: " + rtnObj.toString());
+
+		} catch (ClientError e) {
+			logger.warn(e.getMessage());
+			sendJSONErrorMessage(session, e.getMessage());
+		} catch (ServerError e) {
+			logger.error(e.getMessage());
+			sendJSONErrorMessage(session, "server error");
 		}
 
-		TextMessage returnMessage = new TextMessage(rtn.toString());
-		synchronized (session) {
-			session.sendMessage(returnMessage);
-		}
 	}
 
 	@Override

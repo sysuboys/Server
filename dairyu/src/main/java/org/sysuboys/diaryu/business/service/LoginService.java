@@ -34,8 +34,10 @@ public class LoginService implements ILoginService {
 		return users.get(sessionid);
 	}
 
-	public void logout(String sessionid) {
-		users.remove(sessionids.remove(sessionid));
+	public String logout(String sessionid) {
+		String username = users.remove(sessionid);
+		sessionids.remove(username);
+		return username;
 	}
 
 }

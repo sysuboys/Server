@@ -31,11 +31,11 @@ public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor {
 		}
 		String sessionid = (String) attributes.get(Constant.sessionid);
 		if (sessionid == null) {
-			logger.debug("can't get sessionid from Attributes named \"" + Constant.sessionid + "\"");
+			logger.warn("can't get sessionid from Attributes named \"" + Constant.sessionid + "\"");
 			return false;
 		}
-		if (loginService.getUsername(sessionid) == null) {
-			logger.debug("can't get username with sessionid=" + sessionid);
+		if (loginService.getUsername(sessionid) == null) { // TODO 保存用户名吧
+			logger.warn("can't get username with sessionid=" + sessionid);
 			return false;
 		}
 		return true;

@@ -82,6 +82,18 @@
 
 	<dependencies>
 	
+		<!-- 上传文件 -->
+		<dependency>
+	        <groupId>commons-fileupload</groupId>
+	        <artifactId>commons-fileupload</artifactId>
+	        <version>1.2.2</version>
+	    </dependency>
+		<dependency>
+	        <groupId>commons-io</groupId>
+	        <artifactId>commons-io</artifactId>
+	        <version>2.5</version>
+	    </dependency>
+	
 		<!-- json -->
 		<dependency>
 		    <groupId>org.json</groupId>

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.sysuboys.diaryu.business.model.ExchangeModel;
 
-public interface IExchangeModelMap {
+public interface IExchangeModelService {
 
 	Map<String, ExchangeModel> get();
 

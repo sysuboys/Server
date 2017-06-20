@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.sysuboys.diaryu.util.SecurityUtil;
+
 @Entity
 @Table(name = "diarys")
 public class Diary implements Serializable {
@@ -24,16 +26,16 @@ public class Diary implements Serializable {
 	private User user = null;
 
 	private String title = null;
-	private String body = null;
+	private String filename = null;
 
 	public Diary() {
 		super();
 	}
 
-	public Diary(User user, String title, String body) {
+	public Diary(User user, String title) {
 		this.user = user;
 		this.title = title;
-		this.body = body;
+		this.filename = SecurityUtil.generate32();
 	}
 
 	public Long getId() {
@@ -52,12 +54,12 @@ public class Diary implements Serializable {
 		this.title = title;
 	}
 
-	public String getBody() {
-		return body;
+	public String getFilename() {
+		return filename;
 	}
 
-	public void setBody(String body) {
-		this.body = body;
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 }

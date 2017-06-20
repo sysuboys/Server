@@ -6,6 +6,6 @@ public interface ILoginService {
 	
 	String getUsername(String sessionid);
 	
-	void logout(String sessionid);
+	String logout(String sessionid);
 
 }

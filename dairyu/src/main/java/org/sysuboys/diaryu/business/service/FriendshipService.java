@@ -21,10 +21,10 @@ public class FriendshipService implements IFriendshipService {
 	IFriendshipDao friendshipDao;
 
 	@Transactional
-	public List<String> findFriends(String username) {
+	public List<String> findFriends(String username) throws NoSuchUser {
 		User user = userDao.findByUsername(username);
 		if (user == null)
-			throw new NoSuchUser("username: " + username);
+			throw new NoSuchUser(username);
 		List<Long> ids = friendshipDao.findFriends(user.getId());
 		List<String> friends = new ArrayList<String>();
 		for (Long userId : ids)
@@ -33,13 +33,13 @@ public class FriendshipService implements IFriendshipService {
 	}
 
 	@Transactional
-	public void makeFriend(String username1, String username2) {
+	public void makeFriend(String username1, String username2) throws NoSuchUser {
 		User user1 = userDao.findByUsername(username1);
 		if (user1 == null)
-			throw new NoSuchUser("username: " + username1);
+			throw new NoSuchUser(username1);
 		User user2 = userDao.findByUsername(username2);
 		if (user2 == null)
-			throw new NoSuchUser("username: " + username2);
+			throw new NoSuchUser(username2);
 		Friendship friendship1 = new Friendship(user1.getId(), user2.getId());
 		friendshipDao.create(friendship1);
 		Friendship friendship2 = new Friendship(user2.getId(), user1.getId());
