@@ -2,6 +2,7 @@ package org.sysuboys.diaryu.web.websocket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.sysuboys.diaryu.business.model.ExchangeModel;
@@ -36,25 +37,20 @@ public class MatchHandler extends AbstractBaseHandler {
 						model.getInviter().equals(username) ? "your friend are not ready" : "you didn't get ready");
 
 			boolean success = model.match(username, position);
-			logger.info(username + " is at position " + position);
+			logger.info("[" + username + "] is at position " + position);
 
 			JSONObject informObj = new JSONObject();
 			informObj.put("success", success);
 			logger.debug("match result: " + success);
 
-			TextMessage informMsg = new TextMessage(informObj.toString());
-			synchronized (session) {
-				session.sendMessage(informMsg);
-			}
+			sendJSON(session, informObj);
 
 			if (success) { // 成功后也立即通知另一个人
 				String friend = model.getAnother(username);
 				WebSocketSession friendSession = webSocketSessionService.get(friend).get(SessionType.match);
 				if (friendSession == null)
-					throw new NoSessionError(friend + " have no \"match\" session", friend);
-				synchronized (friendSession) {
-					friendSession.sendMessage(informMsg);
-				}
+					throw new NoSessionError("[" + friend + "] have no [match] session", friend);
+				sendJSON(friendSession, informObj);
 			}
 
 		} catch (ClientError e) {
@@ -68,6 +64,16 @@ public class MatchHandler extends AbstractBaseHandler {
 			exchangeMap.remove(username);
 		}
 
+	}
+
+	@Override
+	public void afterConnectionClosed(WebSocketSession wss, CloseStatus cs) throws Exception {
+		ExchangeModel model = exchangeMap.get(username);
+		if (model != null && model.isReady() && !model.isMatched()) {
+			cancelExchange(username);
+			logger.warn("[" + username + "] match session closed before matched, exchange abort");
+		}
+		super.afterConnectionClosed(wss, cs);
 	}
 
 	@Override

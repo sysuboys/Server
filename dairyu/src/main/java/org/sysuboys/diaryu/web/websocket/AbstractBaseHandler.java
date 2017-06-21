@@ -73,7 +73,7 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		// TODO 所有handler:连接断开？……
 		super.handleTextMessage(session, message);
-		logger.info("username=" + username + ", receive: " + message.getPayload());
+		logger.info("[" + username + "] receive: " + message.getPayload());
 	}
 
 	@Override
@@ -81,14 +81,14 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 		if (wss.isOpen()) {
 			wss.close();
 		}
-		logger.warn("username=" + username + ", TransportError");
+		logger.warn("[" + username + "] TransportError");
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession wss, CloseStatus cs) throws Exception {
-		logger.info("username=" + username + ", closed");
+		logger.info("[" + username + "] closed");
 		if (username != null)
-			webSocketSessionService.get(username).remove(SessionType.invite);
+			webSocketSessionService.get(username).remove(getSessionType());
 	}
 
 	@Override
@@ -108,6 +108,19 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 			session.sendMessage(returnMessage);
 		}
 
+	}
+
+	public void sendJSON(WebSocketSession session, JSONObject json) throws IOException {
+		TextMessage returnMessage = new TextMessage(json.toString());
+		synchronized (session) {
+			session.sendMessage(returnMessage);
+		}
+	}
+
+	public void cancelExchange(String username) {
+		ExchangeModel model = exchangeMap.remove(username);
+		if (model != null)
+			exchangeMap.remove(model.getAnother(username));
 	}
 
 }

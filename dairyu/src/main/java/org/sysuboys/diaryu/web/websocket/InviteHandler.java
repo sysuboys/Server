@@ -2,6 +2,7 @@ package org.sysuboys.diaryu.web.websocket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.sysuboys.diaryu.business.model.ExchangeModel;
@@ -38,11 +39,11 @@ public class InviteHandler extends AbstractBaseHandler {
 				if (diaryService.findByUsernameAndTitle(username, title) == null)
 					throw new ClientError("you have no diary titled \"" + title + "\"");
 			} catch (NoSuchUser e) {
-				throw new ServerError("can not find username \"" + username + "\" while connecting");
+				throw new ServerError("can not find user [" + username + "] while connecting");
 			}
 
-			WebSocketSession friendSession = webSocketSessionService.get(invitee).get(SessionType.isInvited);
-			if (friendSession == null) // TODO 可能是意外断开？
+			WebSocketSession inviteeIsInvited = webSocketSessionService.get(invitee).get(SessionType.isInvited);
+			if (inviteeIsInvited == null) // TODO 可能是意外断开？
 				throw new ClientError("your friend is not online");
 
 			// 用户同一时间只允许一个关系，不能同时跟2人交换
@@ -51,7 +52,6 @@ public class InviteHandler extends AbstractBaseHandler {
 					throw new ClientError("you have already an exchange");
 				if (exchangeMap.containsKey(invitee))
 					throw new ClientError("your friend \"" + invitee + "\" has already an exchange");
-				logger.debug("7");
 				ExchangeModel model = new ExchangeModel(username, invitee, title);
 				exchangeMap.put(username, model);
 				exchangeMap.put(invitee, model);
@@ -64,10 +64,7 @@ public class InviteHandler extends AbstractBaseHandler {
 			informObj.put("inviter", username);
 			informObj.put("title", title);
 
-			TextMessage informMsg = new TextMessage(informObj.toString());
-			synchronized (friendSession) {
-				friendSession.sendMessage(informMsg);
-			}
+			sendJSON(inviteeIsInvited, informObj);
 			logger.info("send to [isInvited]: " + informObj.toString());
 
 		} catch (ClientError e) {
@@ -78,6 +75,16 @@ public class InviteHandler extends AbstractBaseHandler {
 			sendJSONErrorMessage(session, "server error");
 		}
 
+	}
+
+	@Override
+	public void afterConnectionClosed(WebSocketSession wss, CloseStatus cs) throws Exception {
+		ExchangeModel model = exchangeMap.get(username);
+		if (model != null && model.getInviter().equals(username) && !model.isReady()) {
+			cancelExchange(username);
+			logger.warn("[" + username + "] invite session closed before invtee get ready, exchange abort");
+		}
+		super.afterConnectionClosed(wss, cs);
 	}
 
 	@Override

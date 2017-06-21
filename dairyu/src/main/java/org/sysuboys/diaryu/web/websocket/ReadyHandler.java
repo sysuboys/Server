@@ -38,7 +38,7 @@ public class ReadyHandler extends AbstractBaseHandler {
 				if (diaryService.findByUsernameAndTitle(username, title2) == null)
 					throw new ClientError("you have no diary titled \"" + title2 + "\"");
 			} catch (NoSuchUser e) {
-				throw new ServerError("can not find username \"" + username + "\" while connecting");
+				throw new ServerError("can not find user [" + username + "] while connecting");
 			}
 
 			exchangeModel.ready(title2);
@@ -47,11 +47,17 @@ public class ReadyHandler extends AbstractBaseHandler {
 			JSONObject rtnObj = new JSONObject();
 			rtnObj.put("success", true);
 
-			TextMessage rtnMsg = new TextMessage(rtnObj.toString());
-			synchronized (session) {
-				session.sendMessage(rtnMsg);
-			}
+			sendJSON(session, rtnObj);
 			logger.info("send back: " + rtnObj.toString());
+
+			String inviter = exchangeModel.getInviter();
+			WebSocketSession inviterInvite = webSocketSessionService.get(inviter).get(SessionType.invite);
+			if (inviterInvite == null) {
+				cancelExchange(username);
+				throw new ClientError("inviter [" + inviter + "] is not online, exchange abort");
+			}
+			sendJSON(inviterInvite, rtnObj);
+			logger.info("send to inviter [" + inviter + "]: " + rtnObj.toString());
 
 		} catch (ClientError e) {
 			logger.warn(e.getMessage());

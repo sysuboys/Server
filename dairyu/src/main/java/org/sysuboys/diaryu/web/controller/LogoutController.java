@@ -22,7 +22,7 @@ public class LogoutController {
 		String sessionid = (String) request.getSession().getAttribute(Constant.sessionid);
 		request.getSession().removeAttribute(Constant.sessionid);
 		String username = loginService.logout(sessionid);
-		logger.info(username + " logout");
+		logger.info(username + " logout with sessionid=" + sessionid);
 		return "logout";
 	}
 

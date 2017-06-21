@@ -51,8 +51,8 @@ public class LoginController {
 			if (sessionid == null)
 				throw new ClientError("wrong username or password");
 			request.getSession().setAttribute(Constant.sessionid, sessionid);
-			
-			logger.info(username + " login");
+
+			logger.info(username + " login with sessionid=" + sessionid);
 
 			object.put("success", true);
 			object.put("username", username);

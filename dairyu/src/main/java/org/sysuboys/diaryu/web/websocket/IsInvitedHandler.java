@@ -23,10 +23,7 @@ public class IsInvitedHandler extends AbstractBaseHandler {
 			rtnObj.put("title", model.getFriendTitle(username));
 		}
 
-		TextMessage rtnMsg = new TextMessage(rtnObj.toString());
-		synchronized (session) {
-			session.sendMessage(rtnMsg);
-		}
+		sendJSON(session, rtnObj);
 		logger.info("send back: " + rtnObj.toString());
 
 	}

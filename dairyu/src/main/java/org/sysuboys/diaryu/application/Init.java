@@ -26,9 +26,15 @@ public class Init {
 	FriendshipService friendshipService;
 
 	public void doInit() {
-		logger.info("doInit begin....");
+		if (userService.exist("Init")) {
+			logger.info("user [Init] exist, skipping database initialization...");
+			return;
+		}
 
+		logger.info("database initialization begin....");
 		try {
+
+			userService.create(new User("Init", "Init"));
 
 			User a = new User("a", "a");
 			User b = new User("b", "b");
@@ -65,12 +71,12 @@ public class Init {
 			}
 
 		} catch (NoSuchUser e) {
-			logger.error("NoSuchUser in initialize");
+			logger.error(e.getMessage());
 		} catch (EntityExistError e) {
 			logger.error("EntityExistError, may be database was initialized and not dropped");
 		}
 
-		logger.info("doInit end....");
+		logger.info("database initialization end....");
 	}
 
 }
