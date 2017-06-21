@@ -19,6 +19,10 @@ import org.sysuboys.diaryu.business.service.LoginService;
 import org.sysuboys.diaryu.business.service.UserService;
 import org.sysuboys.diaryu.business.service.WebSocketSessionService;
 
+/**
+ * 4个Handler的基类，在事件时进行log，同时提供一些功能函数
+ *
+ */
 public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 
 	Logger logger;

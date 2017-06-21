@@ -43,7 +43,7 @@ public class InviteHandler extends AbstractBaseHandler {
 			}
 
 			WebSocketSession inviteeIsInvited = webSocketSessionService.get(invitee).get(SessionType.isInvited);
-			if (inviteeIsInvited == null) // TODO 可能是意外断开？
+			if (inviteeIsInvited == null)
 				throw new ClientError("your friend is not online");
 
 			// 用户同一时间只允许一个关系，不能同时跟2人交换

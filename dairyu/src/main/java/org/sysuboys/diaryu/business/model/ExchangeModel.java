@@ -1,5 +1,9 @@
 package org.sysuboys.diaryu.business.model;
 
+/**
+ * 保存交换中的信息
+ *
+ */
 public class ExchangeModel {
 
 	final String inviter, invitee;

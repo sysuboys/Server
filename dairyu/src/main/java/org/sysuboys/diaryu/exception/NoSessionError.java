@@ -6,9 +6,6 @@ package org.sysuboys.diaryu.exception;
  */
 public class NoSessionError extends DiaryuException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8320119069898807064L;
 
 	final String username;

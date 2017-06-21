@@ -6,6 +6,8 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 /**
+ * 主要包含2个功能函数： 1. Md5加盐加密（简单拼接） 2. 产生32位随机字符（16进制）
+ * 
  * @author origin from cevencheng ({@linkplain l1
  *         http://blog.csdn.net/liang0000zai/article/details/51493744}) updated
  *         by Sine

@@ -7,7 +7,12 @@ import org.sysuboys.diaryu.business.model.SessionType;
 
 public interface WebSocketSessionService {
 
-	// 每个用户对应一个连接列表
+	/**
+	 * 获取单个用户对应的WebSocket连接列表
+	 * 
+	 * @param username
+	 * @return
+	 */
 	Map<SessionType, WebSocketSession> get(String username);
 
 }

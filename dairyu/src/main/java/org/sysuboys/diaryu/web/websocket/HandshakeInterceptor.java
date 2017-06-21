@@ -34,7 +34,7 @@ public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor {
 			logger.warn("can't get sessionid from Attributes named \"" + Constant.sessionid + "\"");
 			return false;
 		}
-		if (loginService.getUsername(sessionid) == null) { // TODO 保存用户名吧
+		if (loginService.getUsername(sessionid) == null) {
 			logger.warn("can't get username with sessionid=" + sessionid);
 			return false;
 		}

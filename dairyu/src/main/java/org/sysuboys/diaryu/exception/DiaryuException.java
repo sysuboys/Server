@@ -6,9 +6,6 @@ package org.sysuboys.diaryu.exception;
  */
 public class DiaryuException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7473389435436653532L;
 
 	public DiaryuException() {

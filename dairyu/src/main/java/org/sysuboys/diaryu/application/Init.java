@@ -31,6 +31,7 @@ public class Init {
 			return;
 		}
 
+		// 初始化包含一些简单测试，创建的用户也用于用例测试
 		logger.info("database initialization begin....");
 		try {
 

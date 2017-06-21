@@ -132,7 +132,7 @@ public class DiaryController {
 			} catch (IOException e) {
 				throw new ServerError("IOException: " + e.getMessage());
 			}
-		} catch (ClientError e) {
+		} catch (ClientError e) { // TODO 暂时没有返回错误信息的方法
 			logger.warn(e.getMessage());
 			return new ResponseEntity<byte[]>(new byte[0], headers, HttpStatus.FORBIDDEN);
 		} catch (ServerError e) {
