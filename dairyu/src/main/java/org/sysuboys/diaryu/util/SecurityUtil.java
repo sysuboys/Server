@@ -14,6 +14,13 @@ public class SecurityUtil {
 
 	private static final int SESSION_ID_BYTES = 16;
 
+	public static String Md5Hash(String string, String salt) {
+		MessageDigest md = getDigest(); // 取摘要,默认是"MD5"算法
+		byte[] bytes = (string + salt).getBytes();
+		String hexadecimal = byteToHexadecimal(md.digest(bytes));
+		return hexadecimal;
+	}
+
 	/**
 	 * 
 	 * @return random String of hexadecimal digits of 32 characters (from MD5)

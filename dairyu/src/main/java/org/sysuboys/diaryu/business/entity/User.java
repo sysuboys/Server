@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.sysuboys.diaryu.util.SecurityUtil;
 
 @Entity
@@ -40,14 +39,13 @@ public class User implements Serializable {
 		super();
 		this.username = username;
 		this.salt = SecurityUtil.generate32();
-		Md5Hash hash = new Md5Hash(clearPassword, this.salt);
-		this.password = hash.toString();
+		this.password = SecurityUtil.Md5Hash(clearPassword, this.salt);
 	}
-	
+
 	// 明文
 	public boolean checkPassword(String clearPassword) {
-		Md5Hash hash = new Md5Hash(clearPassword, this.salt);
-		return this.password.equals(hash.toString());
+		password = SecurityUtil.Md5Hash(clearPassword, this.salt);
+		return this.password.equals(password);
 	}
 
 	public Long getId() {

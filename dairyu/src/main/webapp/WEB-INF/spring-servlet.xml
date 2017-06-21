@@ -41,12 +41,6 @@
 	<!-- enables Spring's own MessageSource message resolution mechanisms. -->
 	<bean id="templateEngine" class="org.thymeleaf.TemplateEngine">
 		<property name="templateResolver" ref="templateResolver" />
-		<!-- 使用shiro标签 -->
-		<property name="additionalDialects">
-			<set>
-				<bean class="at.pollux.thymeleaf.shiro.dialect.ShiroDialect" />
-			</set>
-		</property>
 	</bean>
 
 	<bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
@@ -58,27 +52,7 @@
 
 
 	<!-- #2 websocket消息处理bean -->
-	
-	<!-- 以下2个只是测试 -->
-	<bean id="WebSocketHandler" class="org.sysuboys.diaryu.web.websocket.WebSocketHandler" />
-	<websocket:handlers allowed-origins="*">
-		<!-- 配置消息处理bean和路径的映射关系 -->
-		<websocket:mapping path="/server" handler="WebSocketHandler" />
-		<websocket:handshake-interceptors>
-			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
-		</websocket:handshake-interceptors>
-	</websocket:handlers>
-	<bean id="sockjsWebSocketHandler" class="org.sysuboys.diaryu.web.websocket.WebSocketHandler" />
-	<websocket:handlers allowed-origins="*">
-		<!-- 配置消息处理bean和路径的映射关系 -->
-		<websocket:mapping path="/sockjs/server" handler="sockjsWebSocketHandler" />
-		<websocket:handshake-interceptors>
-			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
-		</websocket:handshake-interceptors>
-		<!-- 开启sockjs，去掉则关闭sockjs -->
-		<websocket:sockjs />
-	</websocket:handlers>
-	
+
 	<!-- diaryu的4个Handler -->
 	<bean id="inviteHandler" class="org.sysuboys.diaryu.web.websocket.InviteHandler" />
 	<websocket:handlers allowed-origins="*">
@@ -112,7 +86,7 @@
 			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
 		</websocket:handshake-interceptors>
 	</websocket:handlers>
-	
+
 	<!-- 配置websocket消息的最大缓冲区长度 -->
 	<bean
 		class="org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean">
@@ -123,17 +97,15 @@
 
 
 	<!-- 上传文件 -->
-	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-	    <property name="maxUploadSize" value="102400000"></property>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="102400000"></property>
 	</bean>
 
-	<!-- <bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/view/" />
-		<property name="suffix" value=".jsp" />
-	</bean> -->
+	<!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" 
+		/> <property name="prefix" value="/view/" /> <property name="suffix" value=".jsp" 
+		/> </bean> -->
 
 </beans>
 
