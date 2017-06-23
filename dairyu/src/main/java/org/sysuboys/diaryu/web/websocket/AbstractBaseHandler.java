@@ -40,7 +40,6 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 	@Autowired
 	FriendshipService friendshipService;
 
-	String username;
 	Map<String, ExchangeModel> exchangeMap;
 
 	public AbstractBaseHandler() {
@@ -52,22 +51,9 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws IOException {
 
-		logger.info("connected");
+		String username = getUsername(session);
 
-		String sessionid = (String) session.getAttributes().get(Constant.sessionid);
-		if (sessionid == null) {
-			logger.error("can't get sessionid from Attributes after connection established");
-			session.close(CloseStatus.SERVER_ERROR);
-			return;
-		}
-		username = loginService.getUsername(sessionid);
-		if (username == null) {
-			logger.error("can't get username with sessionid=" + sessionid);
-			session.close(CloseStatus.SERVER_ERROR);
-			return;
-		}
-
-		logger.info("username=" + username);
+		logger.info("[" + username + "] connected");
 		webSocketSessionService.get(username).put(getSessionType(), session);
 		exchangeMap = exchangeModelService.get();
 
@@ -77,19 +63,20 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		// TODO 所有handler:连接断开？……
 		super.handleTextMessage(session, message);
-		logger.info("[" + username + "] receive: " + message.getPayload());
+		logger.debug("[" + getUsername(session) + "] receive: " + message.getPayload());
 	}
 
 	@Override
-	public void handleTransportError(WebSocketSession wss, Throwable thrwbl) throws Exception {
-		if (wss.isOpen()) {
-			wss.close();
+	public void handleTransportError(WebSocketSession session, Throwable thrwbl) throws Exception {
+		if (session.isOpen()) {
+			session.close();
 		}
-		logger.warn("[" + username + "] TransportError");
+		logger.warn("[" + getUsername(session) + "] TransportError");
 	}
 
 	@Override
-	public void afterConnectionClosed(WebSocketSession wss, CloseStatus cs) throws Exception {
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus cs) throws Exception {
+		String username = getUsername(session);
 		logger.info("[" + username + "] closed");
 		if (username != null)
 			webSocketSessionService.get(username).remove(getSessionType());
@@ -125,6 +112,22 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 		ExchangeModel model = exchangeMap.remove(username);
 		if (model != null)
 			exchangeMap.remove(model.getAnother(username));
+	}
+
+	/**
+	 * get username according to sessionid in session attributes
+	 * 
+	 * @param session
+	 * @return username nullable
+	 */
+	public String getUsername(WebSocketSession session) {
+		String sessionid = (String) session.getAttributes().get(Constant.sessionid);
+		if (sessionid == null)
+			logger.error("can't get sessionid from session attributes");
+		String username = loginService.getUsername(sessionid);
+		if (username == null)
+			logger.error("can't get username by sessionid");
+		return username;
 	}
 
 }

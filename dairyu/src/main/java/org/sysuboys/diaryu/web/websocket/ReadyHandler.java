@@ -16,6 +16,7 @@ public class ReadyHandler extends AbstractBaseHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
 		super.handleTextMessage(session, message);
+		String username = getUsername(session);
 
 		try {
 
@@ -48,7 +49,7 @@ public class ReadyHandler extends AbstractBaseHandler {
 			rtnObj.put("success", true);
 
 			sendJSON(session, rtnObj);
-			logger.info("send back: " + rtnObj.toString());
+			logger.debug("[" + username + "] send back: " + rtnObj.toString());
 
 			String inviter = exchangeModel.getInviter();
 			WebSocketSession inviterInvite = webSocketSessionService.get(inviter).get(SessionType.invite);
@@ -56,14 +57,15 @@ public class ReadyHandler extends AbstractBaseHandler {
 				cancelExchange(username);
 				throw new ClientError("inviter [" + inviter + "] is not online, exchange abort");
 			}
+			rtnObj.put("title", title2);
 			sendJSON(inviterInvite, rtnObj);
-			logger.info("send to inviter [" + inviter + "]: " + rtnObj.toString());
+			logger.debug("[" + username + "] send to inviter [" + inviter + "][invite]: " + rtnObj.toString());
 
 		} catch (ClientError e) {
-			logger.warn(e.getMessage());
+			logger.warn("[" + username + "] " + e.getMessage());
 			sendJSONErrorMessage(session, e.getMessage());
 		} catch (ServerError e) {
-			logger.error(e.getMessage());
+			logger.error("[" + username + "] " + e.getMessage());
 			sendJSONErrorMessage(session, "server error");
 		}
 

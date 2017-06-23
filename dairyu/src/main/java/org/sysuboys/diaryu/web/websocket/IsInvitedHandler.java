@@ -12,6 +12,7 @@ public class IsInvitedHandler extends AbstractBaseHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
 		super.handleTextMessage(session, message);
+		String username = getUsername(session);
 
 		JSONObject rtnObj = new JSONObject();
 		ExchangeModel model = exchangeMap.get(username);
@@ -24,7 +25,7 @@ public class IsInvitedHandler extends AbstractBaseHandler {
 		}
 
 		sendJSON(session, rtnObj);
-		logger.info("send back: " + rtnObj.toString());
+		logger.debug("[" + username + "] send back: " + rtnObj.toString());
 
 	}
 

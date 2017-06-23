@@ -2,6 +2,8 @@ package org.sysuboys.diaryu.web.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
@@ -99,13 +101,14 @@ public class DiaryController {
 
 		logger.debug("/getFile GET");
 
+		String username = null;
 		HttpHeaders headers = new HttpHeaders();
 		try {
 
 			String sessionid = (String) request.getSession().getAttribute(Constant.sessionid);
 			if (sessionid == null)
 				throw new ClientError("can not find " + Constant.sessionid);
-			String username = loginService.getUsername(sessionid);
+			username = loginService.getUsername(sessionid);
 			if (username == null)
 				throw new ClientError("unrecognized " + Constant.sessionid);
 
@@ -114,29 +117,37 @@ public class DiaryController {
 				throw new ClientError("you have no exchange");
 
 			String title = exchangeModel.getFriendTitle(username);
+			String friend = exchangeModel.getAnother(username);
+			logger.info("[" + username + "] will get [" + friend + "] diary [" + title + "]");
 			Diary diary;
 			try {
-				diary = diaryService.findByUsernameAndTitle(username, title);
+				diary = diaryService.findByUsernameAndTitle(friend, title);
+				if (diary == null)
+					throw new ServerError("can't find diary after exchanged");
 			} catch (NoSuchUser e) {
 				throw new ServerError("can not find user by username=" + username);
 			}
 			exchangeModelMap.get().remove(username);
 
 			File file = diaryService.getFile(diary.getFilename());
-			// String dfileName = new String(fileName.getBytes("gb2312"),
-			// "iso8859-1");
+			String dfilename;
+			try {
+				dfilename = new String(title.getBytes("utf-8"), "iso8859-1");
+			} catch (UnsupportedEncodingException e) {
+				throw new ServerError("UnsupportedEncodingException: " + e.getMessage());
+			}
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-			headers.setContentDispositionFormData("attachment", title);
+			headers.setContentDispositionFormData("attachment", dfilename);
 			try {
 				return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file), headers, HttpStatus.CREATED);
 			} catch (IOException e) {
 				throw new ServerError("IOException: " + e.getMessage());
 			}
 		} catch (ClientError e) { // TODO 暂时没有返回错误信息的方法
-			logger.warn(e.getMessage());
+			logger.warn("[" + username + "] " + e.getMessage());
 			return new ResponseEntity<byte[]>(new byte[0], headers, HttpStatus.FORBIDDEN);
 		} catch (ServerError e) {
-			logger.error(e.getMessage());
+			logger.error("[" + username + "] " + e.getMessage());
 			return new ResponseEntity<byte[]>(new byte[0], headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 

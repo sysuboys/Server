@@ -17,6 +17,7 @@ public class InviteHandler extends AbstractBaseHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
 		super.handleTextMessage(session, message);
+		String username = getUsername(session);
 
 		try {
 			String invitee = null;
@@ -57,7 +58,7 @@ public class InviteHandler extends AbstractBaseHandler {
 				exchangeMap.put(invitee, model);
 			}
 
-			logger.info(username + " invite " + invitee + " with " + title);
+			logger.info("[" + username + "] invite [" + invitee + "] with diary [" + title + "]");
 
 			JSONObject informObj = new JSONObject();
 			informObj.put("invited", true);
@@ -65,26 +66,27 @@ public class InviteHandler extends AbstractBaseHandler {
 			informObj.put("title", title);
 
 			sendJSON(inviteeIsInvited, informObj);
-			logger.info("send to [isInvited]: " + informObj.toString());
+			logger.debug("[" + username + "] send to [" + invitee + "][isInvited]: " + informObj.toString());
 
 		} catch (ClientError e) {
-			logger.warn(e.getMessage());
+			logger.warn("[" + username + "] " + e.getMessage());
 			sendJSONErrorMessage(session, e.getMessage());
 		} catch (ServerError e) {
-			logger.error(e.getMessage());
+			logger.error("[" + username + "] " + e.getMessage());
 			sendJSONErrorMessage(session, "server error");
 		}
 
 	}
 
 	@Override
-	public void afterConnectionClosed(WebSocketSession wss, CloseStatus cs) throws Exception {
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus cs) throws Exception {
+		String username = getUsername(session);
 		ExchangeModel model = exchangeMap.get(username);
 		if (model != null && model.getInviter().equals(username) && !model.isReady()) {
 			cancelExchange(username);
 			logger.warn("[" + username + "] invite session closed before invtee get ready, exchange abort");
 		}
-		super.afterConnectionClosed(wss, cs);
+		super.afterConnectionClosed(session, cs);
 	}
 
 	@Override

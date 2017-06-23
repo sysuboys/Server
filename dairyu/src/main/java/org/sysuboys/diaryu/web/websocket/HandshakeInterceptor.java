@@ -31,7 +31,7 @@ public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor {
 		}
 		String sessionid = (String) attributes.get(Constant.sessionid);
 		if (sessionid == null) {
-			logger.warn("can't get sessionid from Attributes named \"" + Constant.sessionid + "\"");
+			logger.warn("can't get sessionid from attributes named \"" + Constant.sessionid + "\"");
 			return false;
 		}
 		if (loginService.getUsername(sessionid) == null) {

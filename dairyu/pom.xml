@@ -14,8 +14,7 @@
 		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
 
 		<!-- spring -->
-		<springframework.version>4.3.3.RELEASE</springframework.version>
-		<spring.version>4.3.0.RELEASE</spring.version>
+		<springframework.version>4.3.9.RELEASE</springframework.version>
 
 		<!-- persistence -->
 		<hibernate.version>5.0.11.Final</hibernate.version>
@@ -32,7 +31,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.3.11.v20160721</version>
+				<version>9.4.6.v20170531</version>
 				<configuration>
 					<webApp>
 						<contextPath>/</contextPath>

@@ -16,6 +16,7 @@ public class MatchHandler extends AbstractBaseHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
 		super.handleTextMessage(session, message);
+		String username = getUsername(session);
 
 		try {
 
@@ -37,7 +38,7 @@ public class MatchHandler extends AbstractBaseHandler {
 						model.getInviter().equals(username) ? "your friend are not ready" : "you didn't get ready");
 
 			boolean success = model.match(username, position);
-			logger.info("[" + username + "] is at position " + position);
+			logger.debug("[" + username + "] is at position " + position);
 
 			JSONObject informObj = new JSONObject();
 			informObj.put("success", success);
@@ -46,18 +47,19 @@ public class MatchHandler extends AbstractBaseHandler {
 			sendJSON(session, informObj);
 
 			if (success) { // 成功后也立即通知另一个人
+				logger.info("[" + username + "] and [" + model.getAnother(username) + "] matched");
 				String friend = model.getAnother(username);
 				WebSocketSession friendSession = webSocketSessionService.get(friend).get(SessionType.match);
 				if (friendSession == null)
-					throw new NoSessionError("[" + friend + "] have no [match] session", friend);
+					throw new NoSessionError("[" + friend + "][match] not exist", friend);
 				sendJSON(friendSession, informObj);
 			}
 
 		} catch (ClientError e) {
-			logger.warn(e.getMessage());
+			logger.warn("[" + username + "] " + e.getMessage());
 			sendJSONErrorMessage(session, e.getMessage());
 		} catch (NoSessionError e) {
-			logger.warn(e.getMessage());
+			logger.warn("[" + username + "] " + e.getMessage());
 			logger.warn("exchange abort");
 			String friend = e.getUsername();
 			exchangeMap.remove(friend);
@@ -67,13 +69,14 @@ public class MatchHandler extends AbstractBaseHandler {
 	}
 
 	@Override
-	public void afterConnectionClosed(WebSocketSession wss, CloseStatus cs) throws Exception {
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus cs) throws Exception {
+		String username = getUsername(session);
 		ExchangeModel model = exchangeMap.get(username);
 		if (model != null && model.isReady() && !model.isMatched()) {
 			cancelExchange(username);
 			logger.warn("[" + username + "] match session closed before matched, exchange abort");
 		}
-		super.afterConnectionClosed(wss, cs);
+		super.afterConnectionClosed(session, cs);
 	}
 
 	@Override
