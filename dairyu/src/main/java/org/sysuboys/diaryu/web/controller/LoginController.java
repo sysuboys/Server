@@ -42,7 +42,7 @@ public class LoginController {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String rememberMe = request.getParameter("rememberMe");
-		logger.info("username: " + username + ", password: " + password + ", rememberMe: " + rememberMe);
+		logger.debug("username: " + username + ", password: " + password + ", rememberMe: " + rememberMe);
 
 		JSONObject object = new JSONObject();
 		try {
@@ -52,7 +52,7 @@ public class LoginController {
 				throw new ClientError("wrong username or password");
 			request.getSession().setAttribute(Constant.sessionid, sessionid);
 
-			logger.info(username + " login with sessionid=" + sessionid);
+			logger.info("[" + username + "] login with sessionid=" + sessionid);
 
 			object.put("success", true);
 			object.put("username", username);

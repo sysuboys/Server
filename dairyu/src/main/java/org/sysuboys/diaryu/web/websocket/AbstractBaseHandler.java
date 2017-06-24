@@ -61,7 +61,7 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		// TODO 所有handler:连接断开？……
+		// TODO 所有handler:连接突然断开？……
 		super.handleTextMessage(session, message);
 		logger.debug("[" + getUsername(session) + "] receive: " + message.getPayload());
 	}
@@ -88,17 +88,11 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 	}
 
 	public void sendJSONErrorMessage(WebSocketSession session, String message) throws IOException {
-
 		JSONObject returnObject = new JSONObject();
 		returnObject.put("success", false);
 		returnObject.put("error", message);
 		logger.info("send error: " + message);
-
-		TextMessage returnMessage = new TextMessage(returnObject.toString());
-		synchronized (session) {
-			session.sendMessage(returnMessage);
-		}
-
+		sendJSON(session, returnObject);
 	}
 
 	public void sendJSON(WebSocketSession session, JSONObject json) throws IOException {

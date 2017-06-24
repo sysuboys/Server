@@ -44,7 +44,7 @@ public class User implements Serializable {
 
 	// 明文
 	public boolean checkPassword(String clearPassword) {
-		password = SecurityUtil.Md5Hash(clearPassword, this.salt);
+		String password = SecurityUtil.Md5Hash(clearPassword, this.salt);
 		return this.password.equals(password);
 	}
 

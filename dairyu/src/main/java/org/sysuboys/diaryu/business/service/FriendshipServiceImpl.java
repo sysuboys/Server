@@ -2,6 +2,8 @@ package org.sysuboys.diaryu.business.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,34 @@ public class FriendshipServiceImpl implements FriendshipService {
 	UserDao userDao;
 	@Autowired
 	FriendshipDao friendshipDao;
+
+	Map<String, List<String>> map = new ConcurrentHashMap<String, List<String>>();
+
+	public boolean registerRequest(String from, String to) {
+		List<String> list = getRequests(from);
+		synchronized (list) {
+			if (list.contains(to))
+				return false;
+			list.add(to);
+		}
+		return true;
+	}
+
+	public boolean removeRequest(String from, String to) {
+		List<String> list = getRequests(from);
+		synchronized (list) {
+			return list.remove(to);
+		}
+	}
+
+	List<String> getRequests(String username) {
+		List<String> _map = map.get(username);
+		if (_map == null) {
+			_map = new ArrayList<String>();
+			map.put(username, _map);
+		}
+		return _map;
+	}
 
 	@Transactional
 	public List<String> findFriends(String username) throws NoSuchUser {

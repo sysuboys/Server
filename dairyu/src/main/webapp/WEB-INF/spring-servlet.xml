@@ -53,7 +53,23 @@
 
 	<!-- #2 websocket消息处理bean -->
 
-	<!-- diaryu的4个Handler -->
+	<!-- diaryu的6个Handler -->
+	<bean id="addHandler" class="org.sysuboys.diaryu.web.websocket.AddHandler" />
+	<websocket:handlers allowed-origins="*">
+		<!-- 配置消息处理bean和路径的映射关系 -->
+		<websocket:mapping path="/add" handler="addHandler" />
+		<websocket:handshake-interceptors>
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+	</websocket:handlers>
+	<bean id="isAddedHandler" class="org.sysuboys.diaryu.web.websocket.IsAddedHandler" />
+	<websocket:handlers allowed-origins="*">
+		<!-- 配置消息处理bean和路径的映射关系 -->
+		<websocket:mapping path="/isAdded" handler="isAddedHandler" />
+		<websocket:handshake-interceptors>
+			<bean class="org.sysuboys.diaryu.web.websocket.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+	</websocket:handlers>
 	<bean id="inviteHandler" class="org.sysuboys.diaryu.web.websocket.InviteHandler" />
 	<websocket:handlers allowed-origins="*">
 		<!-- 配置消息处理bean和路径的映射关系 -->

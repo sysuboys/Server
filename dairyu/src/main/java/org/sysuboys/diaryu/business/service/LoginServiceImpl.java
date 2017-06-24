@@ -5,13 +5,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.sysuboys.diaryu.business.dao.UserDao;
 import org.sysuboys.diaryu.business.entity.User;
 import org.sysuboys.diaryu.util.SecurityUtil;;
 
 @Service
-@Transactional
 public class LoginServiceImpl implements LoginService {
 
 	@Autowired
@@ -25,7 +23,6 @@ public class LoginServiceImpl implements LoginService {
 		if (user == null || !user.checkPassword(password))
 			return null;
 		String sessionid = SecurityUtil.generate32();
-		sessionids.put(username, sessionid);
 		users.put(sessionid, username);
 		return sessionid;
 	}
@@ -35,9 +32,7 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	public String logout(String sessionid) {
-		String username = users.remove(sessionid);
-		sessionids.remove(username);
-		return username;
+		return users.remove(sessionid);
 	}
 
 }

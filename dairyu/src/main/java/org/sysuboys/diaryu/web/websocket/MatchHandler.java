@@ -58,7 +58,7 @@ public class MatchHandler extends AbstractBaseHandler {
 		} catch (ClientError e) {
 			logger.warn("[" + username + "] " + e.getMessage());
 			sendJSONErrorMessage(session, e.getMessage());
-		} catch (NoSessionError e) {
+		} catch (NoSessionError e) { // TODO 通知客户端。更改消息形式
 			logger.warn("[" + username + "] " + e.getMessage());
 			logger.warn("exchange abort");
 			String friend = e.getUsername();
