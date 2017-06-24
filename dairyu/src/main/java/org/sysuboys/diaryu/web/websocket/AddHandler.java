@@ -28,6 +28,8 @@ public class AddHandler extends AbstractBaseHandler {
 
 			if (invitee == null)
 				throw new ClientError("parameter \"invitee\" is not String");
+			if (invitee.equals(username))
+				throw new ClientError("you can't make friends with yourself");
 			try {
 				if (!userService.exist(invitee))
 					throw new ClientError("user \"" + invitee + "\" doesn't exist");
@@ -42,7 +44,7 @@ public class AddHandler extends AbstractBaseHandler {
 				throw new ClientError("he(she) is not online");
 
 			boolean success = friendshipService.registerRequest(username, invitee);
-			if (success)
+			if (!success)
 				throw new ClientError("you have already requested");
 
 			logger.info("[" + username + "] want to make friends with [" + invitee + "]");

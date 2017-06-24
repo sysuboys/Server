@@ -1,7 +1,10 @@
 package org.sysuboys.diaryu.web.websocket;
 
+import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.sysuboys.diaryu.business.model.SessionType;
@@ -43,7 +46,7 @@ public class IsAddedHandler extends AbstractBaseHandler {
 			WebSocketSession inviterAdd = webSocketSessionService.get(inviter).get(SessionType.add);
 			if (inviterAdd == null) {
 				logger.warn("[" + inviter + "][add] not exists after [" + username
-						+ "] accepted, successful message will not send");
+						+ "] accepted, response message will not send");
 			} else {
 				sendJSON(inviterAdd, informObj);
 				logger.debug("[" + username + "] send to [" + inviter + "][add]: " + informObj.toString());
@@ -54,6 +57,14 @@ public class IsAddedHandler extends AbstractBaseHandler {
 			sendJSONErrorMessage(session, e.getMessage());
 		}
 
+	}
+
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus cs) throws Exception {
+		String username = getUsername(session);
+		List<String> list = friendshipService.removeAllRequests(username);
+		if (!list.isEmpty()) // TODO 通知对方
+			logger.warn("[" + username + "] disconnected, request(s) deleted");
 	}
 
 	@Override

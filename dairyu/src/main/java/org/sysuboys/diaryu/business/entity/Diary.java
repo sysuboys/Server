@@ -9,8 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.sysuboys.diaryu.util.SecurityUtil;
-
 @Entity
 @Table(name = "diarys")
 public class Diary implements Serializable {
@@ -35,7 +33,7 @@ public class Diary implements Serializable {
 	public Diary(User user, String title) {
 		this.user = user;
 		this.title = title;
-		this.filename = SecurityUtil.generate32();
+		this.filename = user.getUsername() + "__" + title; // TODO 字符可能有问题
 	}
 
 	public Long getId() {

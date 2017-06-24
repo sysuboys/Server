@@ -22,6 +22,8 @@ public interface FriendshipService {
 	 * @return 记录是否存在。
 	 */
 	boolean removeRequest(String from, String to);
+	
+	List<String> removeAllRequests(String to);
 
 	List<String> findFriends(String username) throws NoSuchUser;
 

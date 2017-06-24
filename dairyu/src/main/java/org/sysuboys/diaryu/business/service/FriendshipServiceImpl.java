@@ -23,32 +23,46 @@ public class FriendshipServiceImpl implements FriendshipService {
 	@Autowired
 	FriendshipDao friendshipDao;
 
+	/**
+	 * 被申请人到申请人列表的映射
+	 */
 	Map<String, List<String>> map = new ConcurrentHashMap<String, List<String>>();
 
 	public boolean registerRequest(String from, String to) {
-		List<String> list = getRequests(from);
+		List<String> list = getRequests(to);
 		synchronized (list) {
-			if (list.contains(to))
+			if (list.contains(from))
 				return false;
-			list.add(to);
+			list.add(from);
 		}
 		return true;
 	}
 
 	public boolean removeRequest(String from, String to) {
-		List<String> list = getRequests(from);
+		List<String> list = getRequests(to);
 		synchronized (list) {
-			return list.remove(to);
+			return list.remove(from);
+		}
+	}
+
+	public List<String> removeAllRequests(String to) {
+		List<String> list = getRequests(to);
+		synchronized (list) {
+			List<String> list2 = new ArrayList<String>(list);
+			list.clear();
+			return list2;
 		}
 	}
 
 	List<String> getRequests(String username) {
-		List<String> _map = map.get(username);
-		if (_map == null) {
-			_map = new ArrayList<String>();
-			map.put(username, _map);
+		synchronized (map) {
+			List<String> _map = map.get(username);
+			if (_map == null) {
+				_map = new ArrayList<String>();
+				map.put(username, _map);
+			}
+			return _map;
 		}
-		return _map;
 	}
 
 	@Transactional

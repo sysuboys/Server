@@ -15,7 +15,6 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	UserDao userDao;
 
-	Map<String, String> sessionids = new HashMap<String, String>();
 	Map<String, String> users = new HashMap<String, String>();
 
 	public String login(String username, String password) {

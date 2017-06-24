@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -122,6 +123,12 @@ public abstract class AbstractBaseHandler extends TextWebSocketHandler {
 		if (username == null)
 			logger.error("can't get username by sessionid");
 		return username;
+	}
+
+	@ExceptionHandler
+	public void handler(Exception e) {
+		logger.error("unhandled exception: " + e.getMessage());
+		e.printStackTrace();
 	}
 
 }
